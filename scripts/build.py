@@ -180,7 +180,7 @@ def store_card(s, badges, brand_names=None):
 
 # ---------- brand pages ----------
 def brand_page(b):
-    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (x[0]["Neighborhood"], x[0]["Store"]))
+    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (x[0]["Store type"] != "Brand store", x[0]["Neighborhood"], x[0]["Store"]))
     n = len(lst)
     tags = "".join(f'<a class="tag" href="/makeup/{slugify(c)}/">{esc(CAT_LABEL.get(c, c))}</a>' for c in b["cats"])
     if n:
@@ -242,7 +242,7 @@ def store_page(s):
             items = "".join(f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(makes(b, 5))}</span></span>{CHEV}</a>'
                             for b, sel in sorted(groups[t], key=lambda x: x[0]["Brand"].lower()))
             gh += f'<section class="group"><h3>{esc(t)}</h3><div class="rows">{items}</div></section>'
-        vtxt = " Shelves at this kind of store vary, so not every brand or shade may be in stock." if varies else ""
+        vtxt = " Shelves at this kind of store vary, so not every brand or shade may be in stock." if varies else (" Individual stores may not stock every brand on the chain's list." if s.get("Chain") else "")
         brandsec = f'<section class="wrap"><h2>Makeup brands carried here ({len(lst)})</h2><p class="sub">Grouped by price range. From the {"store" if s["Store type"] == "Brand store" else "chain"}\'s own brand list, last checked {esc(s.get("Last checked", ""))}.{vtxt}</p>{gh}</section>'
     elif s["public_note"]:
         brandsec = ""

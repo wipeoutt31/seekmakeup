@@ -52,7 +52,7 @@
       var hit = chosen.filter(function (i) { return s[5].indexOf(i) >= 0; });
       return { s: s, hit: hit };
     }).filter(function (r) { return r.hit.length >= need; })
-      .sort(function (a, b) { return b.hit.length - a.hit.length || a.s[3].localeCompare(b.s[3]) || a.s[0].localeCompare(b.s[0]); });
+      .sort(function (a, b) { return b.hit.length - a.hit.length || (a.s[2] !== 'Brand store') - (b.s[2] !== 'Brand store') || a.s[3].localeCompare(b.s[3]) || a.s[0].localeCompare(b.s[0]); });
     var names = chosen.map(function (i) { return data.b[i][0]; });
     var head = res.length + ' store' + (res.length === 1 ? '' : 's') + ' in Manhattan carry ' +
       (chosen.length === 1 ? esc(names[0]) : (all.checked ? 'all of: ' : 'at least one of: ') + names.map(esc).join(', '));
@@ -62,9 +62,8 @@
       return;
     }
     var cards = res.slice(0, 60).map(function (r) {
-      var s = r.s, badges = r.hit.map(function (i) {
-        return '<span class="badge ok">' + esc(data.b[i][0]) + '</span>' + (s[6].indexOf(i) >= 0 ? '<span class="badge warn">Selection varies</span>' : '');
-      }).join('');
+      var s = r.s, badges = r.hit.map(function (i) { return '<span class="badge ok">' + esc(data.b[i][0]) + '</span>'; }).join('') +
+        (r.hit.some(function (i) { return s[6].indexOf(i) >= 0; }) ? '<span class="badge warn">Selection varies</span>' : '');
       var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s[0] + ', ' + s[4]);
       return '<article class="card store"><div class="cardhead"><a class="cardtitle" href="/stores/' + s[1] + '/">' + esc(s[0]) + '</a></div>' +
         '<p class="meta">' + esc(s[2]) + ' · ' + esc(s[3]) + '<br>' + esc(s[4]) + '</p><div class="badges">' + badges + '</div>' +
