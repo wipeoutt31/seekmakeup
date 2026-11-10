@@ -99,3 +99,7 @@ h2{font-size:22px;margin:32px 0 10px}
 .foot a{color:var(--ink3)}
 .foot strong{color:var(--ink2)}
 @media (max-width:420px){.mainnav a{padding:10px 7px;font-size:14px}.logo{font-size:21px}}
+.arealabel{display:block;margin-top:8px}
+.area{width:100%;min-height:44px;padding:0 12px;border:1px solid #CFC9CD;border-radius:10px;background:#fff;font:inherit;font-size:16px;color:var(--ink)}
+.borohead{margin:32px 0 8px;scroll-margin-top:16px}
+.borohead .sub{font-size:15px;font-weight:400;color:var(--ink2)}

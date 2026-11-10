@@ -1,6 +1,6 @@
 (function () {
   var q = document.getElementById('q'), sugg = document.getElementById('sugg'), picked = document.getElementById('picked'),
-      all = document.getElementById('all'), out = document.getElementById('results');
+      all = document.getElementById('all'), out = document.getElementById('results'), area = document.getElementById('area');
   if (!q) return;
   var data = null, chosen = [], active = -1;
   function norm(s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
@@ -41,6 +41,7 @@
     var b = e.target.closest('button'); if (!b) return; chosen.splice(chosen.indexOf(+b.dataset.i), 1); render();
   });
   all.addEventListener('change', render);
+  if (area) area.addEventListener('change', render);
   function render() {
     if (!data) return;
     picked.innerHTML = chosen.map(function (i) { return '<span class="pick">' + esc(data.b[i][0]) + '<button type="button" data-i="' + i + '" aria-label="Remove ' + esc(data.b[i][0]) + '">×</button></span>'; }).join('');
@@ -48,13 +49,14 @@
     history.replaceState(null, '', url);
     if (!chosen.length) { out.innerHTML = ''; return; }
     var need = all.checked ? chosen.length : 1;
-    var res = data.s.map(function (s) {
+    var boro = area ? area.value : '';
+    var res = data.s.filter(function (s) { return !boro || s[7] === boro; }).map(function (s) {
       var hit = chosen.filter(function (i) { return s[5].indexOf(i) >= 0; });
       return { s: s, hit: hit };
     }).filter(function (r) { return r.hit.length >= need; })
       .sort(function (a, b) { return b.hit.length - a.hit.length || (a.s[2] !== 'Brand store') - (b.s[2] !== 'Brand store') || a.s[3].localeCompare(b.s[3]) || a.s[0].localeCompare(b.s[0]); });
     var names = chosen.map(function (i) { return data.b[i][0]; });
-    var head = res.length + ' store' + (res.length === 1 ? '' : 's') + ' in Manhattan carry ' +
+    var head = res.length + ' store' + (res.length === 1 ? '' : 's') + ' in ' + (boro || 'Manhattan and Brooklyn') + ' carry ' +
       (chosen.length === 1 ? esc(names[0]) : (all.checked ? 'all of: ' : 'at least one of: ') + names.map(esc).join(', '));
     var links = chosen.map(function (i) { return '<a href="/brands/' + data.b[i][1] + '/">' + esc(data.b[i][0]) + ' page</a>'; }).join(' · ');
     if (!res.length) {

@@ -11,7 +11,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUB = os.path.join(ROOT, "public")
 DATA = json.load(open(os.path.join(ROOT, "data", "sheet.json"), encoding="utf-8"))
 SITE = "https://seekmakeup.com"
-AREA = "Manhattan"
+BOROUGHS = ["Manhattan", "Brooklyn"]
+AREA = " and ".join(BOROUGHS)
 CITY = "New York City"
 TODAY = "2026-11-10"
 
@@ -56,7 +57,7 @@ for b in brands:
     b["cats"] = [c for c in CATS if str(b.get(c, "")).upper() == "TRUE"]
 brand_by_name = {b["Brand"]: b for b in brands}
 
-stores = [s for s in rows("Stores") if s.get("Borough") == AREA]
+stores = [s for s in rows("Stores") if s.get("Borough") in BOROUGHS]
 seen = set()
 for s in stores:
     sl = slugify(s["Store"])
@@ -82,7 +83,7 @@ for s in stores:
     ch = s.get("Chain", "")
     if ch and ch in chain_checked:
         for bn in chain_yes[ch]:
-            carries[(s["Store"], bn)] = "Selection varies" if ch in VARIES_CHAINS else "Carries"
+            carries[(s["Store"], bn)] = "Selection varies" if (ch in VARIES_CHAINS or "Kohl's" in s["Store"]) else "Carries"
 for r in rows("Carries"):
     if r["Store"] in store_by_name and r["Brand"] in brand_by_name:
         carries[(r["Store"], r["Brand"])] = "Selection varies" if r.get("Selection") == "Selection varies" else "Carries"
@@ -157,6 +158,10 @@ SITEMAP = []
 
 NOTICE = f'<div class="notice" role="note">{ICON_INFO}<p><strong>No real-time inventory.</strong> We list stores that carry a brand, not live stock. Selection varies by store, so call ahead for a specific product or shade.</p></div>'
 
+def street(s): return re.sub(r", (New York|Brooklyn), NY \d{5}$", "", s["Address"])
+def city(s): return "Brooklyn" if s.get("Borough") == "Brooklyn" else "New York"
+def where(s): return f'{s["Neighborhood"]}, {s["Borough"]}'
+
 def maps_url(s): return "https://www.google.com/maps/search/?api=1&query=" + re.sub(r"\s+", "+", (s["Store"] + ", " + s["Address"])).replace("&", "%26").replace("#", "%23")
 def tel(p): return "tel:+1" + re.sub(r"\D", "", p)[-10:] if p else ""
 def makes(b, n=6):
@@ -170,9 +175,9 @@ def store_card(s, badges, brand_names=None):
     btns = f'<a class="btn primary" href="{esc(maps_url(s))}" rel="noopener" target="_blank">Directions</a>'
     if ph: btns += f'<a class="btn" href="{tel(ph)}">Call</a>'
     bd = "".join(f'<span class="badge {c}">{esc(t)}</span>' for t, c in badges)
-    return f'''<article class="card store" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-hood="{esc(s["Neighborhood"])}">
+    return f'''<article class="card store" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-boro="{esc(s["Borough"])}" data-hood="{esc(s["Neighborhood"])}">
 <div class="cardhead"><a class="cardtitle" href="/stores/{s["slug"]}/">{esc(s["Store"])}</a></div>
-<p class="meta">{esc(TYPE_LABEL.get(s["Store type"], s["Store type"]))} · {esc(s["Neighborhood"])}<br>{esc(s["Address"])}</p>
+<p class="meta">{esc(TYPE_LABEL.get(s["Store type"], s["Store type"]))} · {esc(where(s))}<br>{esc(s["Address"])}</p>
 <div class="badges">{bd}</div>
 <p class="checked">Last checked {esc(s.get("Last checked", ""))}</p>
 <div class="btns">{btns}</div>
@@ -180,7 +185,7 @@ def store_card(s, badges, brand_names=None):
 
 # ---------- brand pages ----------
 def brand_page(b):
-    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (x[0]["Store type"] != "Brand store", x[0]["Neighborhood"], x[0]["Store"]))
+    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (BOROUGHS.index(x[0]["Borough"]), x[0]["Store type"] != "Brand store", x[0]["Neighborhood"], x[0]["Store"]))
     n = len(lst)
     tags = "".join(f'<a class="tag" href="/makeup/{slugify(c)}/">{esc(CAT_LABEL.get(c, c))}</a>' for c in b["cats"])
     if n:
@@ -188,6 +193,11 @@ def brand_page(b):
         chips = [("all", "All stores")] + [(k, l) for k, l in (("beauty", "Beauty stores"), ("dept", "Department stores"), ("drug", "Drugstores & Target")) if k in types]
         chiphtml = '<div class="chips" role="group" aria-label="Filter stores">' + "".join(
             f'<button type="button" class="chip{" on" if k == "all" else ""}" data-f="{k}" aria-pressed="{"true" if k == "all" else "false"}">{esc(l)}</button>' for k, l in chips) + '</div>' if len(chips) > 2 else ""
+        boros = [bo for bo in BOROUGHS if any(s["Borough"] == bo for s, _ in lst)]
+        if len(boros) > 1:
+            chiphtml = '<div class="chips boro" role="group" aria-label="Filter by borough">' + "".join(
+                f'<button type="button" class="chip{" on" if k == "all" else ""}" data-b="{k}" aria-pressed="{"true" if k == "all" else "false"}">{esc(l)}</button>'
+                for k, l in [("all", "All of " + AREA)] + [(bo, bo + f" ({sum(1 for s, _ in lst if s['Borough'] == bo)})") for bo in boros]) + '</div>' + chiphtml
         cards = "\n".join(store_card(s, [(f'Carries {b["Brand"]}', "ok")] + ([("Selection varies", "warn")] if sel == "Selection varies" else [])) for s, sel in lst)
         count = f'{n} store{"s" if n != 1 else ""} in {AREA} carry this brand'
         listing = f'{chiphtml}<div class="cards" id="list">{cards}</div>'
@@ -217,10 +227,11 @@ def brand_page(b):
          body, crumbs=[("Brands", "/brands/"), (b["Brand"], None)], jsonld=ld, scripts=FILTER_JS)
 
 FILTER_JS = '''<script>
-(function(){var chips=document.querySelectorAll('.chip');if(!chips.length)return;
-chips.forEach(function(c){c.addEventListener('click',function(){chips.forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false')});
-c.classList.add('on');c.setAttribute('aria-pressed','true');var f=c.dataset.f;
-document.querySelectorAll('#list .store').forEach(function(s){s.hidden=!(f==='all'||s.dataset.type===f)})})})})();
+(function(){var chips=document.querySelectorAll('.chip');if(!chips.length)return;var F={f:'all',b:'all'};
+chips.forEach(function(c){c.addEventListener('click',function(){var k=c.dataset.b!==undefined?'b':'f';
+c.parentNode.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false')});
+c.classList.add('on');c.setAttribute('aria-pressed','true');F[k]=c.dataset[k];
+document.querySelectorAll('#list .store').forEach(function(s){s.hidden=!((F.f==='all'||s.dataset.type===F.f)&&(F.b==='all'||s.dataset.boro===F.b))})})})})();
 </script>'''
 
 # ---------- store pages ----------
@@ -251,7 +262,7 @@ def store_page(s):
     body = f'''<section class="intro storeintro"><div class="wrap">
 <span class="typepill">{esc(TYPE_LABEL.get(s["Store type"], s["Store type"]))}</span>
 <h1>{esc(s["Store"])}</h1>
-<p class="meta">{esc(s["Neighborhood"])}, {AREA}</p>
+<p class="meta">{esc(where(s))}</p>
 <p class="details">{"<br>".join(lines)}</p>
 <div class="btns">{btns}</div>
 {pnote}
@@ -260,7 +271,7 @@ def store_page(s):
 <section class="wrap"><div class="help"><h2>Is this your store?</h2><p>Claim this listing to update your brands and hours.</p><a href="{esc(contact("I own a store", s["Store"]))}">Claim this listing →</a></div>
 <p class="small"><a href="{esc(contact("Report a change to a listing", s["Store"]))}">Report a brand that's no longer here</a></p></section>'''
     ld = {"@context": "https://schema.org", "@type": "Store", "name": s["Store"], "url": f'{SITE}/stores/{s["slug"]}/',
-          "address": {"@type": "PostalAddress", "streetAddress": s["Address"].split(", New York")[0], "addressLocality": "New York",
+          "address": {"@type": "PostalAddress", "streetAddress": street(s), "addressLocality": city(s),
                       "addressRegion": "NY", "postalCode": s["Address"][-5:], "addressCountry": "US"}}
     if ph: ld["telephone"] = "+1" + re.sub(r"\D", "", ph)[-10:]
     desc = (f'Makeup brands sold at {s["Store"]}, {s["Address"]}: {len(lst)} brands. ' if lst else f'{s["Store"]}, {s["Address"]}. ') + "Address, phone and directions. No live inventory."
@@ -311,16 +322,19 @@ page("/brands/", f"Makeup brands and where to buy them in {AREA} | SeekMakeup",
      crumbs=[("Brands", None)])
 
 # Stores index, by neighborhood
-hoods = defaultdict(list)
-for s in stores: hoods[s["Neighborhood"]].append(s)
-si = ""
-for h in sorted(hoods):
-    si += f'<section class="group"><h3>{esc(h)}</h3><div class="rows">' + "".join(
-        f'<a class="row" href="/stores/{s["slug"]}/"><span><span class="rowtitle">{esc(s["Store"])}</span><span class="rowsub">{esc(s["Address"].split(", New York")[0])} · {len(by_store.get(s["Store"], []))} brands</span></span>{CHEV}</a>'
-        for s in sorted(hoods[h], key=lambda s: s["Store"])) + '</div></section>'
+si = '<p class="small">Jump to: ' + " · ".join(f'<a href="#{slugify(bo)}">{bo}</a>' for bo in BOROUGHS) + '</p>'
+for bo in BOROUGHS:
+    hoods = defaultdict(list)
+    for s in stores:
+        if s["Borough"] == bo: hoods[s["Neighborhood"]].append(s)
+    si += f'<h2 id="{slugify(bo)}" class="borohead">{bo} <span class="sub">({sum(len(v) for v in hoods.values())} stores)</span></h2>'
+    for h in sorted(hoods):
+        si += f'<section class="group"><h3>{esc(h)}</h3><div class="rows">' + "".join(
+            f'<a class="row" href="/stores/{s["slug"]}/"><span><span class="rowtitle">{esc(s["Store"])}</span><span class="rowsub">{esc(street(s))} · {len(by_store.get(s["Store"], []))} brands</span></span>{CHEV}</a>'
+            for s in sorted(hoods[h], key=lambda s: s["Store"])) + '</div></section>'
 page("/stores/", f"Makeup stores in {AREA} by neighborhood | SeekMakeup",
      f"{len(stores)} {AREA} stores that sell makeup, from Sephora and Ulta to department stores, drugstores and brand boutiques.",
-     f'<section class="intro"><div class="wrap"><h1>Stores in {AREA}</h1><p class="count">{len(stores)} stores, by neighborhood.</p>{NOTICE}</div></section><section class="wrap">{si}</section>',
+     f'<section class="intro"><div class="wrap"><h1>Stores in {AREA}</h1><p class="count">{len(stores)} stores, by borough and neighborhood.</p>{NOTICE}</div></section><section class="wrap">{si}</section>',
      crumbs=[("Stores", None)])
 
 # Makeup (categories) index
@@ -335,8 +349,8 @@ bpos = {name: i for i, (name, _) in enumerate(idx["b"])}
 idx["s"] = []
 for s in stores:
     lst = by_store.get(s["Store"], [])
-    idx["s"].append([s["Store"], s["slug"], TYPE_LABEL.get(s["Store type"], s["Store type"]), s["Neighborhood"], s["Address"],
-                     [bpos[b["Brand"]] for b, _ in lst], [bpos[b["Brand"]] for b, sel in lst if sel == "Selection varies"]])
+    idx["s"].append([s["Store"], s["slug"], TYPE_LABEL.get(s["Store type"], s["Store type"]), where(s), s["Address"],
+                     [bpos[b["Brand"]] for b, _ in lst], [bpos[b["Brand"]] for b, sel in lst if sel == "Selection varies"], s["Borough"]])
 json.dump(idx, open(os.path.join(PUB, "assets", "search.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 
 # Home page
@@ -353,20 +367,21 @@ home = f'''<section class="hero"><div class="wrap">
 <ul id="sugg" class="sugg" role="listbox" hidden></ul>
 <p id="qhint" class="hint">Add as many brands as you like.</p>
 <label class="check"><input id="all" type="checkbox"> Only show stores that carry all of these brands</label>
-<p class="where">Area: <strong>{AREA}, {CITY}</strong></p>
+<label for="area" class="arealabel">Area</label>
+<select id="area" class="area"><option value="">All of {AREA}</option>{"".join(f'<option value="{bo}">{bo}</option>' for bo in BOROUGHS)}</select>
 </form>
 </div></section>
 <section class="wrap" id="results" aria-live="polite"></section>
 <section class="wrap"><h2>Popular brands</h2><div class="tags big">{pop}</div><p class="small"><a href="/brands/">See all {len(brands)} brands →</a> · <a href="/stores/">Browse {len(stores)} stores →</a></p></section>
 <section class="wrap"><h2>Shop by what you need</h2>{cat_tags_html()}</section>
 <section class="wrap"><div class="help"><h2>Own a store?</h2><p>Claim your free listing and tell us which brands you carry.</p><a href="/contact.html?reason=I+own+a+store">Claim your store →</a></div></section>
-<section class="wrap signup"><h2>Get updates</h2><p class="sub">We'll email you when we add Brooklyn, Queens and more. No spam.</p>
+<section class="wrap signup"><h2>Get updates</h2><p class="sub">We'll email you when we add Queens, the Bronx and Staten Island. No spam.</p>
 <form name="launch-list" method="POST" action="/api/subscribe" class="inline">
 <p class="hidden"><label>Leave this empty <input name="company"></label></p>
 <label class="sr" for="email">Email address</label><input id="email" type="email" name="email" placeholder="you@example.com" required autocomplete="email"><button type="submit">Notify me</button></form>
 <p class="small">See our <a href="/privacy.html">privacy policy</a>.</p></section>'''
 home_ld = {"@context": "https://schema.org", "@type": "WebSite", "name": "SeekMakeup", "url": SITE + "/"}
-page("/", "SeekMakeup — Find the stores in Manhattan that carry your makeup brands",
+page("/", f"SeekMakeup — Find the stores in {AREA} that carry your makeup brands",
      f"Search {len(brands)} makeup brands across {len(stores)} {AREA} stores. A directory of brands and the stores that sell them; no live inventory.",
      home, jsonld=home_ld, scripts='<script src="/assets/finder.js" defer></script>')
 shutil.copy(os.path.join(ROOT, "scripts", "finder.js"), os.path.join(PUB, "assets", "finder.js"))
