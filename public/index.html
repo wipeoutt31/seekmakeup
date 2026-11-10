@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SeekMakeup — Find the stores that carry your makeup brands</title>
+<meta name="description" content="SeekMakeup shows which stores near you carry the makeup brands you love. Launching first in New York City.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--accent:#A3214F;--accent-dark:#7A1838;--ink:#1C1B1F;--ink2:#55525A;--ink3:#6A6670;--tint:#FBF5F7;--tag:#F7E8EE;--line:#E2DCE0}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:#fff;line-height:1.5}
+  a{color:var(--accent)}a:hover{color:var(--accent-dark)}
+  .wrap{max-width:680px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid #EDEAEC}
+  header .wrap{display:flex;align-items:center;height:64px}
+  .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.5px;color:var(--ink);text-decoration:none}
+  .logo span{color:var(--accent)}
+  .hero{background:var(--tint);padding:48px 0 44px}
+  .pill{display:inline-block;padding:6px 12px;border-radius:999px;background:var(--tag);color:var(--accent-dark);font-size:13px;font-weight:600}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,7vw,48px);line-height:1.1;letter-spacing:-1px;margin:16px 0 14px}
+  .lede{font-size:17px;color:var(--ink2);margin:0 0 26px;max-width:540px}
+  form{display:flex;flex-wrap:wrap;gap:10px;max-width:520px}
+  label.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  input[type=email]{flex:1 1 240px;height:50px;padding:0 14px;border:1px solid #CFC9CD;border-radius:10px;font:inherit;font-size:16px;background:#fff}
+  input[type=email]:focus{outline:2px solid var(--accent);outline-offset:1px}
+  button{flex:0 0 auto;height:50px;padding:0 22px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-weight:600;font-size:16px;cursor:pointer}
+  button:hover{background:var(--accent-dark)}
+  .fine{font-size:13px;color:var(--ink3);margin:10px 0 0}
+  .hidden{display:none}
+  section.how{padding:44px 0 20px}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:24px;margin:0 0 18px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+  .card{border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h3{margin:0 0 6px;font-size:16px}
+  .card p{margin:0;font-size:14px;color:var(--ink2)}
+  .note{margin:28px 0 0;padding:14px 16px;border-radius:10px;background:#F4F3F5;font-size:14px;color:#45424A}
+  section.stores{padding:24px 0 48px}
+  footer{border-top:1px solid #EDEAEC;padding:20px 0;font-size:13px;color:var(--ink3)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="/">Seek<span>Makeup</span></a></div></header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <span class="pill">Coming soon · New York City first</span>
+      <h1>Find the stores near you that carry your makeup brands.</h1>
+      <p class="lede">Search one brand or several, and see which stores in your area carry them. We list which stores carry a brand, not live stock, so you know where to look before you go.</p>
+      <form name="launch-list" method="POST" action="/api/subscribe">
+        <p class="hidden"><label>Leave this empty <input name="company"></label></p>
+        <label class="sr" for="email">Email address</label>
+        <input id="email" type="email" name="email" placeholder="you@email.com" autocomplete="email" required>
+        <button type="submit">Notify me</button>
+      </form>
+      <p class="fine">One email when we launch. No spam, and you can unsubscribe anytime.</p>
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="wrap">
+      <h2>What SeekMakeup will do</h2>
+      <div class="cards">
+        <div class="card"><h3>Search by brand</h3><p>See which stores near you carry the brands you're looking for.</p></div>
+        <div class="card"><h3>Search several at once</h3><p>Find the one store that carries all of the brands on your list.</p></div>
+        <div class="card"><h3>Browse by store</h3><p>See every makeup brand a store carries, grouped by face, cheeks, eyes and lips.</p></div>
+      </div>
+      <p class="note">SeekMakeup is a directory, not an inventory tracker. Selection varies by store, so call ahead for a specific shade.</p>
+    </div>
+  </section>
+
+  <section class="stores">
+    <div class="wrap">
+      <h2>Own a beauty store in New York?</h2>
+      <p style="margin:0;color:var(--ink2)">Get listed free at launch. Add your email above and we'll reach out before the site goes live.</p>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">© 2026 SeekMakeup</div></footer>
+</body>
+</html>

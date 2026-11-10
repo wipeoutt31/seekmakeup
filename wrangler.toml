@@ -1,0 +1,7 @@
+name = "seekmakeup"
+compatibility_date = "2026-11-01"
+pages_build_output_dir = "public"
+
+[[kv_namespaces]]
+binding = "SIGNUPS"
+id = "ef890e0434c342829655102ffe76de26"
