@@ -81,9 +81,9 @@ for r in chain:
 carries = {}
 for s in stores:
     ch = s.get("Chain", "")
-    if ch and ch in chain_checked:
+    if ch and ch in chain_checked and "Kohl's" not in s["Store"]:  # Sephora at Kohl's carries a much smaller list
         for bn in chain_yes[ch]:
-            carries[(s["Store"], bn)] = "Selection varies" if (ch in VARIES_CHAINS or "Kohl's" in s["Store"]) else "Carries"
+            carries[(s["Store"], bn)] = "Selection varies" if ch in VARIES_CHAINS else "Carries"
 for r in rows("Carries"):
     if r["Store"] in store_by_name and r["Brand"] in brand_by_name:
         carries[(r["Store"], r["Brand"])] = "Selection varies" if r.get("Selection") == "Selection varies" else "Carries"
