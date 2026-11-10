@@ -52,6 +52,7 @@
         <option>Question</option>
         <option>Remove my email</option>
         <option>I own a store</option>
+        <option>Report a change to a listing</option>
         <option>Report a problem</option>
         <option>Other</option>
       </select>
@@ -66,6 +67,11 @@
     <p style="font-size:14px;color:var(--ink3);margin-top:16px">We only use your email to reply to this message. See our <a href="/privacy.html">privacy policy</a>.</p>
   </div>
 </main>
+<script>
+(function(){var q=new URLSearchParams(location.search),r=q.get('reason'),a=q.get('about');
+if(r){var s=document.getElementById('reason');for(var i=0;i<s.options.length;i++)if(s.options[i].text===r)s.selectedIndex=i;}
+if(a){document.getElementById('message').value='About: '+a.slice(0,200)+'\n\n';}})();
+</script>
 <footer><div class="wrap">© 2026 SeekMakeup · <a href="/">Home</a> · <a href="/privacy.html">Privacy</a></div></footer>
 </body>
 </html>
