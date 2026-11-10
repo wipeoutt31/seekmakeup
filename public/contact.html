@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — SeekMakeup</title>
+<meta name="description" content="Contact SeekMakeup: questions, store listings, corrections, or removing your email.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--accent:#A3214F;--accent-dark:#7A1838;--ink:#1C1B1F;--ink2:#55525A;--ink3:#6A6670}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:#fff;line-height:1.6}
+  a{color:var(--accent)}a:hover{color:var(--accent-dark)}
+  .wrap{max-width:680px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid #EDEAEC}
+  header .wrap{display:flex;align-items:center;height:64px}
+  .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.5px;color:var(--ink);text-decoration:none}
+  .logo span{color:var(--accent)}
+  main{padding:36px 0 48px}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:34px;letter-spacing:-.5px;margin:0 0 6px}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:20px;margin:30px 0 8px}
+  p,li{color:#37343B;font-size:16px}
+  .updated{color:var(--ink3);font-size:14px;margin:0 0 20px}
+  footer{border-top:1px solid #EDEAEC;padding:20px 0;font-size:13px;color:var(--ink3)}
+  footer a{color:var(--ink3)}
+  label{display:block;font-weight:600;font-size:14px;margin:16px 0 6px}
+  .opt{font-weight:400;color:var(--ink3)}
+  input,select,textarea{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1px solid #CFC9CD;border-radius:10px;background:#fff;color:var(--ink)}
+  input,select{height:50px;padding-top:0;padding-bottom:0}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+  button{margin-top:20px;height:50px;padding:0 24px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-weight:600;font-size:16px;cursor:pointer}
+  button:hover{background:var(--accent-dark)}
+  .hp{position:absolute;left:-9999px}
+  .lede{color:var(--ink2);font-size:17px;margin:0 0 8px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="/">Seek<span>Makeup</span></a></div></header>
+<main>
+  <div class="wrap">
+    <h1>Contact us</h1>
+    <p class="lede">Questions, store listings, corrections, or removing your email from our list. We read every message.</p>
+    <form method="POST" action="/api/contact">
+      <p class="hp"><label>Leave this empty <input name="company" tabindex="-1" autocomplete="off"></label></p>
+      <label for="reason">What's this about?</label>
+      <select id="reason" name="reason">
+        <option>Question</option>
+        <option>Remove my email</option>
+        <option>I own a store</option>
+        <option>Report a problem</option>
+        <option>Other</option>
+      </select>
+      <label for="name">Your name <span class="opt">(optional)</span></label>
+      <input id="name" name="name" autocomplete="name">
+      <label for="email">Your email</label>
+      <input id="email" type="email" name="email" autocomplete="email" required>
+      <label for="message">Message <span class="opt">(optional if you're removing your email)</span></label>
+      <textarea id="message" name="message" rows="5"></textarea>
+      <button type="submit">Send message</button>
+    </form>
+    <p style="font-size:14px;color:var(--ink3);margin-top:16px">We only use your email to reply to this message. See our <a href="/privacy.html">privacy policy</a>.</p>
+  </div>
+</main>
+<footer><div class="wrap">© 2026 SeekMakeup · <a href="/">Home</a> · <a href="/privacy.html">Privacy</a></div></footer>
+</body>
+</html>
