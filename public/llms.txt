@@ -1,0 +1,16 @@
+# SeekMakeup
+
+> A directory of physical stores in New York City and the makeup brands each one carries. It lists which stores carry a brand, not live stock or shades.
+
+SeekMakeup covers 80 makeup brands and 432 stores: beauty chains, department stores, drugstores, Target, brand boutiques and independent shops. Each store's brand list comes from the store's, chain's or brand's own published list, and every listing shows when it was last checked. Chain stores marked "Selection varies" may not stock every brand on the chain's list.
+
+## Key pages
+- [All brands](https://seekmakeup.com/brands/): one page per brand, listing the New York City stores that carry it
+- [All stores](https://seekmakeup.com/stores/): one page per store, with address, phone, hours and the brands it carries
+- [Makeup categories](https://seekmakeup.com/makeup/): brands grouped by what they make (foundation, lip gloss and more)
+- [Sitemap](https://seekmakeup.com/sitemap.xml)
+
+## Notes for AI tools
+- Brand and store pages include schema.org structured data (Store with OfferCatalog of brands; ItemList of stores).
+- Please cite the brand or store page you used, and remind people to call the store to check a specific product or shade.
+- Stores marked Featured have paid to be shown first on brand pages.

@@ -195,6 +195,14 @@ def makes(b, n=6):
     return " · ".join(labels[:n]) + (" · more" if len(labels) > n else "")
 import datetime as _dt
 TODAY = _dt.date.today()
+STATUS = {"Claimed": "Claimed by the store", "Brands confirmed": "Brands confirmed by the store"}
+def status_line(s):
+    st = str(s.get("Listing status", "")).strip()
+    d = esc(s.get("Last checked", ""))
+    if st == "Brands confirmed": return f'<p class="status ok">✓ Brands confirmed by the store{" · " + d if d else ""}</p>'
+    if st == "Claimed": return f'<p class="status ok">✓ Claimed by the store{" · last checked " + d if d else ""}</p>'
+    return f'<p class="status">From public sources{" · last checked " + d if d else ""}</p>'
+
 def featured(s):  # paid placement: "Featured until" date in the Stores tab, inclusive
     v = str(s.get("Featured until", "")).strip()
     for f in ("%b %d, %Y", "%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y"):
@@ -210,6 +218,7 @@ def store_card(s, badges, brand_names=None):
     if ph: btns += f'<a class="btn" href="{tel(ph)}">Call</a>'
     bd = "".join(f'<span class="badge {c}">{esc(t)}</span>' for t, c in badges)
     if featured(s): bd = '<span class="badge featured">Featured</span>' + bd
+    if str(s.get("Listing status", "")).strip() == "Brands confirmed": bd += '<span class="badge ok">✓ Confirmed by store</span>'
     return f'''<article class="card store{" isfeatured" if featured(s) else ""}" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-boro="{esc(s["Borough"])}" data-hood="{esc(s["Neighborhood"])}">
 <div class="cardhead"><a class="cardtitle" href="/stores/{s["slug"]}/">{esc(s["Store"])}</a></div>
 <p class="meta">{esc(TYPE_LABEL.get(s["Store type"], s["Store type"]))} · {esc(where(s))}<br>{esc(s["Address"])}</p>
@@ -262,9 +271,14 @@ def brand_page(b):
 <section class="wrap listing">{listing}</section>
 {buysec}
 <section class="wrap"><div class="help"><h2>See something wrong?</h2><p>Tell us if a store no longer carries {esc(b["Brand"])}, or if we're missing one.</p><a href="{esc(contact("Report a change to a listing", b["Brand"] + " (brand page)"))}">Report a change →</a></div></section>'''
-    ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+    crumbld = {"@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Brands", "item": SITE + "/brands/"},
         {"@type": "ListItem", "position": 2, "name": b["Brand"], "item": f'{SITE}/brands/{b["slug"]}/'}]}
+    graph = [crumbld]
+    if lst:
+        graph.append({"@type": "ItemList", "name": f'Stores in {AREA} that carry {b["Brand"]}', "numberOfItems": len(lst),
+            "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": x[0]["Store"], "url": f'{SITE}/stores/{x[0]["slug"]}/'} for i, x in enumerate(lst)]})
+    ld = {"@context": "https://schema.org", "@graph": graph}
     page(f'/brands/{b["slug"]}/', f'Where to buy {b["Brand"]} in {AREA}{'' if AREA == 'New York City' else ', NYC'} | SeekMakeup',
          (f'{count.replace("carry this brand", "carry " + b["Brand"])}: addresses, phone numbers and directions. Store listings only, no live inventory.' if lst else f'We haven\'t found a {AREA} store that carries {b["Brand"]} yet. Store listings only, no live inventory.'),
          body, crumbs=[("Brands", "/brands/"), (b["Brand"], None)], jsonld=ld, scripts=FILTER_JS)
@@ -276,6 +290,41 @@ c.parentNode.querySelectorAll('.chip').forEach(function(x){x.classList.remove('o
 c.classList.add('on');c.setAttribute('aria-pressed','true');F[k]=c.dataset[k];
 document.querySelectorAll('#list .store').forEach(function(s){s.hidden=!((F.f==='all'||s.dataset.type===F.f)&&(F.b==='all'||s.dataset.boro===F.b))})})})})();
 </script>'''
+
+
+# ---------- structured data helpers ----------
+_DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+_DAYMAP = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
+def _t24(t):
+    t = t.strip().lower()
+    if t == "midnight": return "24:00"
+    if t == "noon": return "12:00"
+    m = re.fullmatch(r"(\d{1,2})(?::(\d{2}))?\s*(am|pm)", t)
+    if not m: return None
+    h, mi = int(m.group(1)) % 12, int(m.group(2) or 0)
+    if m.group(3) == "pm": h += 12
+    return f"{h:02d}:{mi:02d}"
+def opening_hours(txt):  # our hours text -> schema.org openingHours list, or None if it can't be read exactly
+    txt = (txt or "").strip()
+    if not txt: return None
+    if txt.lower() == "open 24 hours": return ["Mo-Su 00:00-24:00"]
+    out = []
+    for part in re.split(r"[;,]\s*", txt):
+        m = re.fullmatch(r"(Daily|[A-Z][a-z]{2}(?:[–-][A-Z][a-z]{2})?(?:\s*(?:&|and)\s*[A-Z][a-z]{2})?)\s+(.+?)\s*[–-]\s*(.+)", part.strip())
+        if not m: return None
+        days, o, c = m.group(1), _t24(m.group(2)), _t24(m.group(3))
+        if not o or not c: return None
+        if days == "Daily": spec = "Mo-Su"
+        else:
+            segs = re.split(r"\s*(?:&|and)\s*", days)
+            pieces = []
+            for sg in segs:
+                ab = [x.lower()[:3] for x in re.split(r"[–-]", sg)]
+                if any(a not in _DAYMAP for a in ab): return None
+                pieces.append("-".join(_DAYS[_DAYMAP[a]] for a in ab))
+            spec = ",".join(pieces)
+        out.append(f"{spec} {o}-{c}")
+    return out
 
 # ---------- store pages ----------
 def store_page(s):
@@ -306,17 +355,29 @@ def store_page(s):
 <span class="typepill">{esc(TYPE_LABEL.get(s["Store type"], s["Store type"]))}</span>
 <h1>{esc(s["Store"])}</h1>
 <p class="meta">{esc(where(s))}</p>
+{status_line(s)}
 <p class="details">{"<br>".join(lines)}</p>
 <div class="btns">{btns}</div>
 {pnote}
 </div></section>
 {brandsec}
-<section class="wrap"><div class="help"><h2>Is this your store?</h2><p>Claim this listing to update your brands and hours. It's free.</p><a href="{esc(contact("I own a store", s["Store"]))}">Claim this listing →</a><p class="small">Want more shoppers to see your store? Featured listings appear first on the brand pages for every brand you carry, with a Featured label. <a href="{esc(contact("Featured listing", s["Store"]))}">Ask about featured listings →</a></p></div>
+<section class="wrap"><div class="help"><h2>Is this your store?</h2><p>Claim this listing to update your brands and hours, and get the \u201cBrands confirmed by the store\u201d label. It's free.</p><a href="{esc(contact("I own a store", s["Store"]))}">Claim this listing →</a><p class="small">Want more shoppers to see your store? Featured listings appear first on the brand pages for every brand you carry, with a Featured label. <a href="{esc(contact("Featured listing", s["Store"]))}">Ask about featured listings →</a></p></div>
 <p class="small"><a href="{esc(contact("Report a change to a listing", s["Store"]))}">Report a brand that's no longer here</a></p></section>'''
-    ld = {"@context": "https://schema.org", "@type": "Store", "name": s["Store"], "url": f'{SITE}/stores/{s["slug"]}/',
+    ld = {"@type": "Store", "name": s["Store"], "url": f'{SITE}/stores/{s["slug"]}/',
           "address": {"@type": "PostalAddress", "streetAddress": street(s), "addressLocality": city(s),
                       "addressRegion": "NY", "postalCode": s["Address"][-5:], "addressCountry": "US"}}
     if ph: ld["telephone"] = "+1" + re.sub(r"\D", "", ph)[-10:]
+    oh = opening_hours(hrs)
+    if oh: ld["openingHours"] = oh
+    if web: ld["sameAs"] = web
+    if s.get("lat"): ld["geo"] = {"@type": "GeoCoordinates", "latitude": s["lat"], "longitude": s["lng"]}
+    if lst:
+        ld["hasOfferCatalog"] = {"@type": "OfferCatalog", "name": f"Makeup brands sold at {s['Store']}",
+            "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Product", "name": f'{b["Brand"]} makeup',
+                "brand": {"@type": "Brand", "name": b["Brand"]}, "url": f'{SITE}/brands/{b["slug"]}/'}} for b, _ in sorted(lst, key=lambda x: sk(x[0]["Brand"]))]}
+    ld = {"@context": "https://schema.org", "@graph": [ld, {"@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Stores", "item": SITE + "/stores/"},
+        {"@type": "ListItem", "position": 2, "name": s["Store"], "item": f'{SITE}/stores/{s["slug"]}/'}]}]}
     desc = (f'Makeup brands sold at {s["Store"]}, {s["Address"]}: {len(lst)} brands. ' if lst else f'{s["Store"]}, {s["Address"]}. ') + "Address, phone and directions. No live inventory."
     page(f'/stores/{s["slug"]}/', f'{s["Store"]}, {s["Neighborhood"]}: makeup brands sold here | SeekMakeup', desc, body,
          crumbs=[("Stores", "/stores/"), (s["Store"], None)], jsonld=ld)
@@ -401,8 +462,8 @@ popular = ["Fenty Beauty", "Rare Beauty", "Charlotte Tilbury", "MAC Cosmetics", 
 pop = "".join(f'<a class="tag" href="/brands/{brand_by_name[p]["slug"]}/">{esc(p)}</a>' for p in sorted(popular, key=sk) if p in brand_by_name)
 home = f'''<section class="hero"><div class="wrap">
 <span class="pill">{"Now in all five boroughs of NYC" if len(BOROUGHS) == 5 else f"Now in {AREA} · more of NYC coming"}</span>
-<h1>Find the stores that carry your makeup brands.</h1>
-<p class="lede">Search one brand or several to see which {AREA} stores carry them, so you know where to look before you go.</p>
+<h1>Find one store. Shop all your favorite brands.</h1>
+<p class="lede">Pick one makeup brand or several and see which {AREA} stores carry them, including the stores that carry all of them, so you know where to go before you leave.</p>
 <div class="notice" role="note">{ICON_INFO}<p><strong>No real-time inventory tracking.</strong> SeekMakeup is a directory of makeup brands and the stores that sell them. We can't tell you whether a product or shade is in stock today, so call the store before you go.</p></div>
 <form id="finder" class="finder" autocomplete="off" onsubmit="return false">
 <label for="q">Brand or brands</label>
@@ -438,3 +499,23 @@ open(os.path.join(PUB, "sitemap.xml"), "w").write(sm)
 print(f"brands {len(brands)} | stores {len(stores)} | links {len(carries)} | pages {len(urls)}")
 print("brands with no store:", [b["Brand"] for b in brands if not by_brand.get(b["Brand"])])
 print("stores with no brands:", [s["Store"] for s in stores if not by_store.get(s["Store"])])
+
+# llms.txt: a short plain-text guide for AI tools and agents
+llms = f"""# SeekMakeup
+
+> A directory of physical stores in {AREA} and the makeup brands each one carries. It lists which stores carry a brand, not live stock or shades.
+
+SeekMakeup covers {len(brands)} makeup brands and {len(stores)} stores: beauty chains, department stores, drugstores, Target, brand boutiques and independent shops. Each store's brand list comes from the store's, chain's or brand's own published list, and every listing shows when it was last checked. Chain stores marked "Selection varies" may not stock every brand on the chain's list.
+
+## Key pages
+- [All brands]({SITE}/brands/): one page per brand, listing the {AREA} stores that carry it
+- [All stores]({SITE}/stores/): one page per store, with address, phone, hours and the brands it carries
+- [Makeup categories]({SITE}/makeup/): brands grouped by what they make (foundation, lip gloss and more)
+- [Sitemap]({SITE}/sitemap.xml)
+
+## Notes for AI tools
+- Brand and store pages include schema.org structured data (Store with OfferCatalog of brands; ItemList of stores).
+- Please cite the brand or store page you used, and remind people to call the store to check a specific product or shade.
+- Stores marked Featured have paid to be shown first on brand pages.
+"""
+open(os.path.join(PUB, "llms.txt"), "w").write(llms)
