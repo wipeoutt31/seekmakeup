@@ -25,9 +25,16 @@ def buy_online(b):  # [(label, href, is_affiliate)]
             out.append((name, _aff(r["template"], r["pages"][b["Brand"]]), bool(r["template"])))
     return out
 SITE = "https://seekmakeup.com"
-BOROUGHS = ["Manhattan", "Brooklyn", "Queens", "The Bronx", "Staten Island"]
-AREA = "New York City" if len(BOROUGHS) == 5 else ", ".join(BOROUGHS[:-1]) + " and " + BOROUGHS[-1]
-CITY = "New York City"
+# Cities (metros) and their areas, in display order. For NYC the areas are the five boroughs;
+# for LA they are the City of Los Angeles and seven neighboring cities.
+METROS = {"New York City": {"short": "NYC", "areas": ["Manhattan", "Brooklyn", "Queens", "The Bronx", "Staten Island"]},
+          "Los Angeles": {"short": "LA", "areas": ["Los Angeles", "Beverly Hills", "West Hollywood", "Santa Monica", "Culver City", "Glendale", "Burbank", "Pasadena"]}}
+LIVE_METROS = ["New York City", "Los Angeles"]  # cities shown on the site, in order
+METRO_LIST = [m for m in METROS if m in LIVE_METROS]
+BOROUGHS = [a for m in METRO_LIST for a in METROS[m]["areas"]]  # every live area, in order
+AREA_METRO = {a: m for m in METRO_LIST for a in METROS[m]["areas"]}
+AREA = " and ".join(METRO_LIST) if len(METRO_LIST) < 3 else ", ".join(METRO_LIST[:-1]) + " and " + METRO_LIST[-1]
+SHORT = " and ".join(METROS[m]["short"] for m in METRO_LIST)
 TODAY = "2026-11-10"
 
 # Store chains whose shelves differ a lot from store to store.
@@ -50,9 +57,19 @@ def sk(name):  # A–Z sort key: ignore case, punctuation and a leading "The"
     n = re.sub(r"[^a-z0-9 ]", "", unicodedata.normalize("NFKD", str(name)).encode("ascii", "ignore").decode().lower()).strip()
     return re.sub(r"^the ", "", n)
 
-def nstores(b, where=""):  # "12 New York City stores", "1 store", or "No NYC stores found yet"
-    n = len(by_brand.get(b["Brand"], []))
-    return f"{n}{where} store{'s' if n != 1 else ''}" if n else "No NYC stores found yet"
+def city_counts(b):  # {"New York City": 12, "Los Angeles": 5}
+    c = {m: 0 for m in METRO_LIST}
+    for s, _ in by_brand.get(b["Brand"], []): c[s["metro"]] += 1
+    return c
+def nstores(b, where=""):  # "12 stores in NYC · 5 in LA", "12 stores in NYC · none in LA yet", or "No stores found yet"
+    c = city_counts(b)
+    if not sum(c.values()): return "No stores found yet"
+    parts = []
+    for i, m in enumerate(METRO_LIST):
+        n, sh = c[m], METROS[m]["short"]
+        if i == 0: parts.append(f"{n} store{'s' if n != 1 else ''} in {sh}" if n else f"None in {sh} yet")
+        else: parts.append(f"{n} in {sh}" if n else f"none in {sh} yet")
+    return " · ".join(parts)
 
 def esc(s): return html.escape(str(s or ""), quote=True)
 
@@ -79,8 +96,10 @@ for b in brands:
     b["cats"] = [c for c in CATS if str(b.get(c, "")).upper() == "TRUE"]
 brand_by_name = {b["Brand"]: b for b in brands}
 
-LIVE_METROS = {"New York City"}  # add "Los Angeles" here when LA launches
-stores = [s for s in rows("Stores") if (s.get("Metro") or "New York City") in LIVE_METROS and s.get("Borough") in BOROUGHS]
+stores = []
+for s in rows("Stores"):
+    s["metro"] = s.get("Metro") or "New York City"
+    if s["metro"] in METRO_LIST and AREA_METRO.get(s.get("Borough")) == s["metro"]: stores.append(s)
 GEO = json.load(open(os.path.join(ROOT, "data", "geo.json"), encoding="utf-8")) if os.path.exists(os.path.join(ROOT, "data", "geo.json")) else {}
 for s in stores:
     if s["Address"] in GEO: s["lat"], s["lng"] = GEO[s["Address"]]
@@ -184,11 +203,16 @@ SITEMAP = []
 
 NOTICE = f'<div class="notice" role="note">{ICON_INFO}<p><strong>No real-time inventory.</strong> We list stores that carry a brand, not live stock. Selection varies by store, so call ahead for a specific product or shade.</p></div>'
 
-def street(s): return re.sub(r", [A-Za-z .']+, NY \d{5}$", "", s["Address"])
+_ADDR = re.compile(r", ([A-Za-z .']+), ([A-Z]{2}) (\d{5})$")
+def street(s): return _ADDR.sub("", s["Address"])
 def city(s):  # Queens addresses use their own postal town (Astoria, Flushing...)
-    m = re.search(r", ([A-Za-z .']+), NY \d{5}$", s["Address"])
+    m = _ADDR.search(s["Address"])
     return m.group(1) if m else ("Brooklyn" if s.get("Borough") == "Brooklyn" else "New York")
-def where(s): return f'{s["Neighborhood"]}, {s["Borough"]}'
+def region(s):
+    m = _ADDR.search(s["Address"])
+    return m.group(2) if m else "NY"
+def where(s): return ", ".join(x for x in (s.get("Neighborhood"), s["Borough"]) if x)  # "Fairfax, Los Angeles" or just "Burbank"
+def hood(s): return s.get("Neighborhood") or s["Borough"]
 
 def maps_url(s): return "https://www.google.com/maps/search/?api=1&query=" + re.sub(r"\s+", "+", (s["Store"] + ", " + s["Address"])).replace("&", "%26").replace("#", "%23")
 def tel(p): return "tel:+1" + re.sub(r"\D", "", p)[-10:] if p else ""
@@ -222,7 +246,7 @@ def store_card(s, badges, brand_names=None):
     bd = "".join(f'<span class="badge {c}">{esc(t)}</span>' for t, c in badges)
     if featured(s): bd = '<span class="badge featured">Featured</span>' + bd
     if str(s.get("Listing status", "")).strip() == "Brands confirmed": bd += '<span class="badge ok">✓ Confirmed by store</span>'
-    return f'''<article class="card store{" isfeatured" if featured(s) else ""}" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-boro="{esc(s["Borough"])}" data-hood="{esc(s["Neighborhood"])}"{f' data-lat="{s["lat"]}" data-lng="{s["lng"]}"' if s.get("lat") else ""}>
+    return f'''<article class="card store{" isfeatured" if featured(s) else ""}" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-metro="{esc(s["metro"])}" data-boro="{esc(s["Borough"])}" data-hood="{esc(s["Neighborhood"])}"{f' data-lat="{s["lat"]}" data-lng="{s["lng"]}"' if s.get("lat") else ""}>
 <div class="cardhead"><a class="cardtitle" href="/stores/{s["slug"]}/">{esc(s["Store"])}</a></div>
 <p class="meta">{esc(TYPE_LABEL.get(s["Store type"], s["Store type"]))} · {esc(where(s))}<br>{esc(s["Address"])}</p>
 <div class="badges">{bd}</div>
@@ -232,7 +256,7 @@ def store_card(s, badges, brand_names=None):
 
 # ---------- brand pages ----------
 def brand_page(b):
-    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (not featured(x[0]), BOROUGHS.index(x[0]["Borough"]), x[0]["Store type"] != "Brand store", sk(x[0]["Neighborhood"]), sk(x[0]["Store"])))
+    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (not featured(x[0]), METRO_LIST.index(x[0]["metro"]), BOROUGHS.index(x[0]["Borough"]), x[0]["Store type"] != "Brand store", sk(x[0]["Neighborhood"]), sk(x[0]["Store"])))
     n = len(lst)
     tags = "".join(f'<a class="tag" href="/makeup/{slugify(c)}/">{esc(CAT_LABEL.get(c, c))}</a>' for c in b["cats"])
     if n:
@@ -240,18 +264,27 @@ def brand_page(b):
         chips = [("all", "All stores")] + [(k, l) for k, l in (("beauty", "Beauty stores"), ("dept", "Department stores"), ("drug", "Drugstores & Target")) if k in types]
         chiphtml = '<div class="chips" role="group" aria-label="Filter stores">' + "".join(
             f'<button type="button" class="chip{" on" if k == "all" else ""}" data-f="{k}" aria-pressed="{"true" if k == "all" else "false"}">{esc(l)}</button>' for k, l in chips) + '</div>' if len(chips) > 2 else ""
+        cc = city_counts(b)
+        mets = [m for m in METRO_LIST if cc[m]]
         boros = [bo for bo in BOROUGHS if any(s["Borough"] == bo for s, _ in lst)]
+        def chip(attr, k, l, extra=""):
+            return f'<button type="button" class="chip{" on" if k == "all" else ""}" data-{attr}="{esc(k)}" aria-pressed="{"true" if k == "all" else "false"}"{extra}>{esc(l)}</button>'
+        areachips = ""
         if len(boros) > 1:
-            chiphtml = '<div class="chips boro" role="group" aria-label="Filter by borough">' + "".join(
-                f'<button type="button" class="chip{" on" if k == "all" else ""}" data-b="{k}" aria-pressed="{"true" if k == "all" else "false"}">{esc(l)}</button>'
-                for k, l in [("all", "All of " + AREA)] + [(bo, bo + f" ({sum(1 for s, _ in lst if s['Borough'] == bo)})") for bo in boros]) + '</div>' + chiphtml
+            single = mets[0] if len(mets) == 1 else ""
+            areachips = (f'<div class="chips boro" role="group" aria-label="Filter by area"{"" if single else " hidden"}>' + chip("b", "all", "All areas") +
+                         "".join(chip("b", bo, bo + f" ({sum(1 for s, _ in lst if s['Borough'] == bo)})", f' data-metro="{esc(AREA_METRO[bo])}"') for bo in boros) + '</div>')
+        citychips = ""
+        if len(mets) > 1:
+            citychips = '<div class="chips city" role="group" aria-label="Filter by city">' + chip("m", "all", f"Both cities ({n})") + "".join(chip("m", m, f"{m} ({cc[m]})") for m in mets) + '</div>'
+        chiphtml = citychips + areachips + chiphtml
         cards = "\n".join(store_card(s, [(f'Carries {b["Brand"]}', "ok")] + ([("Selection varies", "warn")] if sel == "Selection varies" else [])) for s, sel in lst)
-        count = f'{n} store{"s" if n != 1 else ""} in {AREA} carry this brand'
+        count = " · ".join(f'{cc[m]} store{"s" if cc[m] != 1 else ""} in {m}' if cc[m] else f'None found in {m} yet' for m in METRO_LIST)
         fnote = '<p class="small">Stores marked Featured pay to be shown first.</p>' if any(featured(x[0]) for x in lst) else ""
         near = '<div class="nearbar"><button type="button" class="nearbtn" id="nearme">Show nearest to me first</button><span class="nearmsg" id="nearmsg" role="status"></span></div>'
         listing = f'{chiphtml}{near}<div class="cards" id="list">{cards}</div>{fnote}'
     else:
-        count = "No NYC stores found yet"
+        count = "No stores found yet"
         online = ""
         if b.get("Website"):
             dom = re.sub(r"^https?://(www\.)?", "", b["Website"])
@@ -283,16 +316,16 @@ def brand_page(b):
         graph.append({"@type": "ItemList", "name": f'Stores in {AREA} that carry {b["Brand"]}', "numberOfItems": len(lst),
             "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": x[0]["Store"], "url": f'{SITE}/stores/{x[0]["slug"]}/'} for i, x in enumerate(lst)]})
     ld = {"@context": "https://schema.org", "@graph": graph}
-    page(f'/brands/{b["slug"]}/', f'Where to buy {b["Brand"]} in {AREA}{'' if AREA == 'New York City' else ', NYC'} | SeekMakeup',
-         (f'{count.replace("carry this brand", "carry " + b["Brand"])}: addresses, phone numbers and directions. Store listings only, no live inventory.' if lst else f'We haven\'t found a {AREA} store that carries {b["Brand"]} yet. Store listings only, no live inventory.'),
+    page(f'/brands/{b["slug"]}/', f'Where to buy {b["Brand"]} in {SHORT} | SeekMakeup',
+         (f'Stores that carry {b["Brand"]}: {count}. Addresses, phone numbers and directions. Store listings only, no live inventory.' if lst else f'We haven\'t found a {AREA} store that carries {b["Brand"]} yet. Store listings only, no live inventory.'),
          body, crumbs=[("Brands", "/brands/"), (b["Brand"], None)], jsonld=ld, scripts=FILTER_JS)
 
 FILTER_JS = '''<script>
-(function(){var chips=document.querySelectorAll('.chip');if(!chips.length)return;var F={f:'all',b:'all'};
-chips.forEach(function(c){c.addEventListener('click',function(){var k=c.dataset.b!==undefined?'b':'f';
-c.parentNode.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false')});
-c.classList.add('on');c.setAttribute('aria-pressed','true');F[k]=c.dataset[k];
-document.querySelectorAll('#list .store').forEach(function(s){s.hidden=!((F.f==='all'||s.dataset.type===F.f)&&(F.b==='all'||s.dataset.boro===F.b))})})})})();
+(function(){var chips=document.querySelectorAll('.chip');if(!chips.length)return;var F={f:'all',b:'all',m:'all'};
+function on(c){c.parentNode.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false')});c.classList.add('on');c.setAttribute('aria-pressed','true')}
+chips.forEach(function(c){c.addEventListener('click',function(){var k=c.dataset.m!==undefined?'m':c.dataset.b!==undefined?'b':'f';on(c);F[k]=c.dataset[k];
+if(k==='m'){var row=document.querySelector('.chips.boro');F.b='all';if(row){var vis=0;row.querySelectorAll('.chip').forEach(function(x){if(x.dataset.b==='all'){on(x);return}x.hidden=x.dataset.metro!==F.m;if(!x.hidden)vis++});row.hidden=F.m==='all'||vis<2}}
+document.querySelectorAll('#list .store').forEach(function(s){s.hidden=!((F.f==='all'||s.dataset.type===F.f)&&(F.m==='all'||s.dataset.metro===F.m)&&(F.b==='all'||s.dataset.boro===F.b))})})})})();
 (function(){var b=document.getElementById('nearme');if(!b)return;var msg=document.getElementById('nearmsg');
 function mi(a,c,d,e){var r=Math.PI/180,x=(d-a)*r,y=(e-c)*r,h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(d*r)*Math.sin(y/2)*Math.sin(y/2);return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))}
 b.addEventListener('click',function(){if(!navigator.geolocation){msg.textContent='Your browser is not able to share your location.';return}
@@ -377,7 +410,7 @@ def store_page(s):
 <p class="small"><a href="{esc(contact("Report a change to a listing", s["Store"]))}">Report a brand that's no longer here</a></p></section>'''
     ld = {"@type": "Store", "name": s["Store"], "url": f'{SITE}/stores/{s["slug"]}/',
           "address": {"@type": "PostalAddress", "streetAddress": street(s), "addressLocality": city(s),
-                      "addressRegion": "NY", "postalCode": s["Address"][-5:], "addressCountry": "US"}}
+                      "addressRegion": region(s), "postalCode": s["Address"][-5:], "addressCountry": "US"}}
     if ph: ld["telephone"] = "+1" + re.sub(r"\D", "", ph)[-10:]
     oh = opening_hours(hrs)
     if oh: ld["openingHours"] = oh
@@ -391,19 +424,19 @@ def store_page(s):
         {"@type": "ListItem", "position": 1, "name": "Stores", "item": SITE + "/stores/"},
         {"@type": "ListItem", "position": 2, "name": s["Store"], "item": f'{SITE}/stores/{s["slug"]}/'}]}]}
     desc = (f'Makeup brands sold at {s["Store"]}, {s["Address"]}: {len(lst)} brands. ' if lst else f'{s["Store"]}, {s["Address"]}. ') + "Address, phone and directions. No live inventory."
-    page(f'/stores/{s["slug"]}/', f'{s["Store"]}, {s["Neighborhood"]}: makeup brands sold here | SeekMakeup', desc, body,
+    page(f'/stores/{s["slug"]}/', f'{s["Store"]}, {hood(s)}: makeup brands sold here | SeekMakeup', desc, body,
          crumbs=[("Stores", "/stores/"), (s["Store"], None)], jsonld=ld)
 
 # ---------- category pages ----------
 def cat_page(c):
     lst = sorted([b for b in brands if c in b["cats"]], key=lambda b: sk(b["Brand"]))
-    items = "".join(f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(b["Price tier"])} · {nstores(b, " " + AREA)}</span></span>{CHEV}</a>' for b in lst)
+    items = "".join(f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(b["Price tier"])} · {nstores(b)}</span></span>{CHEV}</a>' for b in lst)
     label = CAT_LABEL.get(c, c)
     body = f'''<section class="intro"><div class="wrap"><h1>{esc(label)}: brands and where to buy them in {AREA}</h1>
 <p class="count">{len(lst)} brands make {esc(label.lower())}. Pick a brand to see the {AREA} stores that carry it.</p>
 <p class="sub">Category tags are a guide, so check the brand's site for a specific product.</p>{NOTICE}</div></section>
 <section class="wrap"><div class="rows">{items}</div></section>'''
-    page(f'/makeup/{slugify(c)}/', f'{label} brands in {AREA}: where to buy | SeekMakeup',
+    page(f'/makeup/{slugify(c)}/', f'{label} brands in {SHORT}: where to buy | SeekMakeup',
          f'{len(lst)} makeup brands that make {label.lower()}, and the {AREA} stores that carry each one.', body,
          crumbs=[("Makeup", "/makeup/"), (label, None)])
 
@@ -432,48 +465,53 @@ bi = ""
 for L in sorted(letters):
     bi += f'<section class="group"><h3>{L}</h3><div class="rows">' + "".join(
         f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(b["Price tier"])} · {nstores(b)}</span></span>{CHEV}</a>' for b in letters[L]) + '</div></section>'
-page("/brands/", f"Makeup brands and where to buy them in {AREA} | SeekMakeup",
+page("/brands/", f"Makeup brands and where to buy them in {SHORT} | SeekMakeup",
      f"{len(brands)} makeup brands, from drugstore to luxury, and the {AREA} stores that carry each one.",
      f'<section class="intro"><div class="wrap"><h1>Makeup brands</h1><p class="count">{len(brands)} brands. Pick one to see the {AREA} stores that carry it.</p>{NOTICE}</div></section><section class="wrap">{bi}</section>',
      crumbs=[("Brands", None)])
 
 # Stores index, by neighborhood
-si = '<p class="small">Jump to: ' + " · ".join(f'<a href="#{slugify(bo)}">{bo}</a>' for bo in BOROUGHS) + '</p>'
+def _bid(bo): return slugify(bo) + ("-city" if bo in METROS else "")  # LA the city vs Los Angeles the metro
+si = "".join(f'<p class="small"><strong>{esc(m)}:</strong> ' + " · ".join(f'<a href="#{_bid(bo)}">{bo}</a>' for bo in METROS[m]["areas"] if any(s["Borough"] == bo for s in stores)) + '</p>' for m in METRO_LIST)
 for bo in BOROUGHS:
+    if bo == METROS[AREA_METRO[bo]]["areas"][0]:
+        m = AREA_METRO[bo]
+        si += f'<h2 id="{slugify(m)}" class="metrohead">{esc(m)} <span class="sub">({sum(1 for s in stores if s["metro"] == m)} stores)</span></h2>'
     hoods = defaultdict(list)
     for s in stores:
-        if s["Borough"] == bo: hoods[s["Neighborhood"]].append(s)
-    si += f'<h2 id="{slugify(bo)}" class="borohead">{bo} <span class="sub">({sum(len(v) for v in hoods.values())} stores)</span></h2>'
+        if s["Borough"] == bo: hoods[hood(s)].append(s)
+    if not hoods: continue
+    si += f'<h2 id="{_bid(bo)}" class="borohead">{bo} <span class="sub">({sum(len(v) for v in hoods.values())} stores)</span></h2>'
     for h in sorted(hoods, key=sk):
         si += f'<section class="group"><h3>{esc(h)}</h3><div class="rows">' + "".join(
             f'<a class="row" href="/stores/{s["slug"]}/"><span><span class="rowtitle">{esc(s["Store"])}</span><span class="rowsub">{esc(street(s))} · {len(by_store.get(s["Store"], []))} brands</span></span>{CHEV}</a>'
             for s in sorted(hoods[h], key=lambda s: sk(s["Store"]))) + '</div></section>'
-page("/stores/", f"Makeup stores in {AREA} by neighborhood | SeekMakeup",
+page("/stores/", f"Makeup stores in {SHORT} by neighborhood | SeekMakeup",
      f"{len(stores)} {AREA} stores that sell makeup, from Sephora and Ulta to department stores, drugstores and brand boutiques.",
-     f'<section class="intro"><div class="wrap"><h1>Stores in {AREA}</h1><p class="count">{len(stores)} stores, by borough and neighborhood.</p>{NOTICE}</div></section><section class="wrap">{si}</section>',
+     f'<section class="intro"><div class="wrap"><h1>Stores in {AREA}</h1><p class="count">{len(stores)} stores, by city, area and neighborhood.</p>{NOTICE}</div></section><section class="wrap">{si}</section>',
      crumbs=[("Stores", None)])
 
 # Makeup (categories) index
-page("/makeup/", f"Shop makeup by category in {AREA} | SeekMakeup",
+page("/makeup/", f"Shop makeup by category in {SHORT} | SeekMakeup",
      f"Find brands by what you need, from foundation to lip gloss, and the {AREA} stores that carry them.",
      f'<section class="intro"><div class="wrap"><h1>Shop by what you need</h1><p class="count">Pick a category to see the brands that make it.</p></div></section><section class="wrap">{cat_tags_html()}</section>',
      crumbs=[("Makeup", None)])
 
 # Search index for the home page
-idx = {"b": [[b["Brand"], b["slug"]] for b in sorted(brands, key=lambda b: sk(b["Brand"]))]}
+idx = {"b": [[b["Brand"], b["slug"]] for b in sorted(brands, key=lambda b: sk(b["Brand"]))], "m": METRO_LIST}
 bpos = {name: i for i, (name, _) in enumerate(idx["b"])}
 idx["s"] = []
 for s in stores:
     lst = by_store.get(s["Store"], [])
     idx["s"].append([s["Store"], s["slug"], TYPE_LABEL.get(s["Store type"], s["Store type"]), where(s), s["Address"],
-                     [bpos[b["Brand"]] for b, _ in lst], [bpos[b["Brand"]] for b, sel in lst if sel == "Selection varies"], s["Borough"], s.get("lat"), s.get("lng")])
+                     [bpos[b["Brand"]] for b, _ in lst], [bpos[b["Brand"]] for b, sel in lst if sel == "Selection varies"], s["Borough"], s.get("lat"), s.get("lng"), s["metro"]])
 json.dump(idx, open(os.path.join(PUB, "assets", "search.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 
 # Home page
 popular = ["Fenty Beauty", "Rare Beauty", "Charlotte Tilbury", "MAC Cosmetics", "NARS", "Maybelline New York", "e.l.f. Cosmetics", "Dior Beauty"]
 pop = "".join(f'<a class="tag" href="/brands/{brand_by_name[p]["slug"]}/">{esc(p)}</a>' for p in sorted(popular, key=sk) if p in brand_by_name)
 home = f'''<section class="hero"><div class="wrap">
-<span class="pill">{"Now in all five boroughs of NYC" if len(BOROUGHS) == 5 else f"Now in {AREA} · more of NYC coming"}</span>
+<span class="pill">Now in {AREA}</span>
 <h1>Find one store. Shop all your favorite brands.</h1>
 <p class="lede">Pick one makeup brand or several and see which {AREA} stores carry them, including the stores that carry all of them, so you know where to go before you leave.</p>
 <div class="notice" role="note">{ICON_INFO}<p><strong>No real-time inventory tracking.</strong> SeekMakeup is a directory of makeup brands and the stores that sell them. We can't tell you whether a product or shade is in stock today, so call the store before you go.</p></div>
@@ -484,7 +522,7 @@ home = f'''<section class="hero"><div class="wrap">
 <p id="qhint" class="hint">Add as many brands as you like.</p>
 <label class="check"><input id="all" type="checkbox"> Only show stores that carry all of these brands</label>
 <label for="area" class="arealabel">Area</label>
-<select id="area" class="area"><option value="">All of {AREA}</option>{"".join(f'<option value="{bo}">{bo}</option>' for bo in BOROUGHS)}</select>
+<select id="area" class="area"><option value="">Both cities</option>{"".join(f'<optgroup label="{esc(m)}"><option value="m:{esc(m)}">All of {esc(m)}</option>' + "".join(f'<option value="{esc(bo)}">{esc(bo)}{" (city)" if bo in METROS else ""}</option>' for bo in METROS[m]["areas"]) + '</optgroup>' for m in METRO_LIST)}</select>
 </form>
 </div></section>
 <section class="wrap" id="results" aria-live="polite"></section>
@@ -497,7 +535,7 @@ home = f'''<section class="hero"><div class="wrap">
 <label class="sr" for="email">Email address</label><input id="email" type="email" name="email" placeholder="you@example.com" required autocomplete="email"><button type="submit">Notify me</button></form>
 <p class="small">See our <a href="/privacy.html">privacy policy</a>.</p></section>'''
 home_ld = {"@context": "https://schema.org", "@type": "WebSite", "name": "SeekMakeup", "url": SITE + "/"}
-page("/", f"SeekMakeup — Find the stores in {AREA} that carry your makeup brands",
+page("/", f"SeekMakeup — Find the stores in {SHORT} that carry your makeup brands",
      f"Search {len(brands)} makeup brands across {len(stores)} {AREA} stores. A directory of brands and the stores that sell them; no live inventory.",
      home, jsonld=home_ld, scripts=f'<script src="/assets/finder.js?v={JSV}" defer></script>')
 shutil.copy(os.path.join(ROOT, "scripts", "finder.js"), os.path.join(PUB, "assets", "finder.js"))

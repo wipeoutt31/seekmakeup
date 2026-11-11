@@ -104,6 +104,9 @@ h2{font-size:22px;margin:32px 0 10px}
 .area{width:100%;min-height:44px;padding:0 12px;border:1px solid #CFC9CD;border-radius:10px;background:#fff;font:inherit;font-size:16px;color:var(--ink)}
 .borohead{margin:32px 0 8px;scroll-margin-top:16px}
 .borohead .sub{font-size:15px;font-weight:400;color:var(--ink2)}
+.metrohead{margin:44px 0 0;padding-top:16px;border-top:2px solid var(--accent,#A3214F);font-size:28px;scroll-margin-top:16px}
+.metrohead .sub{font-size:15px;font-weight:400;color:var(--ink2)}
+.metrohead + .borohead{margin-top:12px}
 .buyonline{margin:24px 0 0;padding:16px;border:1px solid var(--line,#E2DCE0);border-radius:14px}.buyonline h2{margin-top:0}.buyonline .btns .btn{flex:1 1 140px}
 .badge.featured{background:var(--accent,#A3214F);color:#fff}.card.isfeatured{border-color:var(--accent,#A3214F);box-shadow:0 0 0 1px var(--accent,#A3214F) inset}
 .status{font-size:13px;color:var(--muted,#6A6670);margin:4px 0 8px}.status.ok{color:#1F5A33;font-weight:600}

@@ -51,15 +51,16 @@
     history.replaceState(null, '', url);
     if (!chosen.length) { out.innerHTML = ''; return; }
     var need = all.checked ? chosen.length : 1;
-    var boro = area ? area.value : '';
-    var res = data.s.filter(function (s) { return !boro || s[7] === boro; }).map(function (s) {
+    var boro = area ? area.value : '', metro = boro.indexOf('m:') === 0 ? boro.slice(2) : '';
+    var label = metro || (boro ? area.options[area.selectedIndex].text.replace(' (city)', '') : (data.m || ['New York City']).join(' and '));
+    var res = data.s.filter(function (s) { return !boro || (metro ? s[10] === metro : s[7] === boro); }).map(function (s) {
       var hit = chosen.filter(function (i) { return s[5].indexOf(i) >= 0; });
       return { s: s, hit: hit };
     }).filter(function (r) { return r.hit.length >= need; })
       .map(function (r) { r.d = (me && r.s[8] != null) ? miles(me[0], me[1], r.s[8], r.s[9]) : null; return r; })
-      .sort(function (a, b) { return b.hit.length - a.hit.length || (me ? ((a.d === null) - (b.d === null) || a.d - b.d) : 0) || (a.s[2] !== 'Brand store') - (b.s[2] !== 'Brand store') || a.s[3].localeCompare(b.s[3]) || a.s[0].localeCompare(b.s[0]); });
+      .sort(function (a, b) { return b.hit.length - a.hit.length || (me ? ((a.d === null) - (b.d === null) || a.d - b.d) : 0) || (data.m ? data.m.indexOf(a.s[10]) - data.m.indexOf(b.s[10]) : 0) || (a.s[2] !== 'Brand store') - (b.s[2] !== 'Brand store') || a.s[3].localeCompare(b.s[3]) || a.s[0].localeCompare(b.s[0]); });
     var names = chosen.map(function (i) { return data.b[i][0]; });
-    var head = res.length + ' store' + (res.length === 1 ? '' : 's') + ' in ' + (boro || 'New York City') + ' carry ' +
+    var head = res.length + ' store' + (res.length === 1 ? '' : 's') + ' in ' + label + ' carry ' +
       (chosen.length === 1 ? esc(names[0]) : (all.checked ? 'all of: ' : 'at least one of: ') + names.map(esc).join(', '));
     var links = chosen.map(function (i) { return '<a href="/brands/' + data.b[i][1] + '/">' + esc(data.b[i][0]) + ' page</a>'; }).join(' · ');
     if (!res.length) {
