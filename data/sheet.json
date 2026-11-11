@@ -2294,6 +2294,27 @@
    "Selection varies",
    "Chanel store locator (chanel.com): listed for Fragrance and Beauty",
    "Nov 11, 2026"
+  ],
+  [
+   "Charlotte Tilbury The Grove",
+   "Charlotte Tilbury",
+   "Full line",
+   "Charlotte Tilbury store locator (stores.charlottetilbury.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Macy's Herald Square",
+   "KIKO Milano",
+   "Carries",
+   "KIKO store locator lists a KIKO Milano shop at 151 W 34th St (Macy's Herald Square)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Macy's Staten Island",
+   "KIKO Milano",
+   "Carries",
+   "KIKO store locator lists a KIKO Milano shop at 100 Richmond Hill Rd (Macy's Staten Island)",
+   "Nov 11, 2026"
   ]
  ],
  "Chain carries": [
@@ -2309,7 +2330,8 @@
    "Bloomingdale's",
    "Saks Fifth Avenue",
    "Nordstrom",
-   "Bergdorf Goodman"
+   "Bergdorf Goodman",
+   "Neiman Marcus"
   ],
   [
    "Maybelline New York",
@@ -2320,6 +2342,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2337,6 +2360,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2348,6 +2372,7 @@
    "No",
    "Yes",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2365,6 +2390,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2376,6 +2402,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2393,6 +2420,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2401,6 +2429,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2421,6 +2450,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2432,6 +2462,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2449,6 +2480,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2460,6 +2492,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2477,10 +2510,12 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
    "Catrice",
+   "No",
    "No",
    "No",
    "No",
@@ -2505,6 +2540,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2512,6 +2548,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2533,6 +2570,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2544,6 +2582,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2561,11 +2600,13 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
    "Sephora Collection",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2589,6 +2630,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2603,6 +2645,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2617,6 +2660,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2627,6 +2671,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2645,11 +2690,13 @@
    "Yes",
    "Yes",
    "Yes",
+   "No",
    "No"
   ],
   [
    "Huda Beauty",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2673,6 +2720,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2687,11 +2735,13 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
    "Haus Labs",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2715,11 +2765,13 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
    "Patrick Ta",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2743,6 +2795,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2757,6 +2810,7 @@
    "Yes",
    "Yes",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2770,6 +2824,7 @@
    "No",
    "Yes",
    "No",
+   "Yes",
    "Yes",
    "Yes"
   ],
@@ -2785,7 +2840,8 @@
    "Yes",
    "Yes",
    "Yes",
-   "No"
+   "No",
+   "Yes"
   ],
   [
    "MAC Cosmetics",
@@ -2799,6 +2855,7 @@
    "Yes",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2810,6 +2867,7 @@
    "Yes",
    "Yes",
    "No",
+   "Yes",
    "Yes",
    "Yes",
    "Yes",
@@ -2827,6 +2885,7 @@
    "Yes",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2838,6 +2897,7 @@
    "No",
    "Yes",
    "No",
+   "Yes",
    "Yes",
    "Yes",
    "Yes",
@@ -2855,6 +2915,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2868,6 +2929,7 @@
    "Yes",
    "Yes",
    "No",
+   "Yes",
    "Yes",
    "Yes"
   ],
@@ -2883,6 +2945,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2897,6 +2960,7 @@
    "Yes",
    "Yes",
    "No",
+   "Yes",
    "Yes"
   ],
   [
@@ -2911,11 +2975,13 @@
    "No",
    "No",
    "Yes",
+   "Yes",
    "Yes"
   ],
   [
    "Danessa Myricks Beauty",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2939,6 +3005,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -2953,6 +3020,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -2967,11 +3035,13 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
    "Saie",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -2995,11 +3065,13 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
    "Tower 28",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -3023,11 +3095,13 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
    "Rhode",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -3051,11 +3125,13 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
    "ONE/SIZE",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -3079,6 +3155,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -3093,6 +3170,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -3107,6 +3185,7 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -3121,6 +3200,7 @@
    "Yes",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -3135,11 +3215,13 @@
    "No",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
    "Lys Beauty",
    "Yes",
+   "No",
    "No",
    "No",
    "No",
@@ -3163,6 +3245,7 @@
    "No",
    "No",
    "No",
+   "No",
    "No"
   ],
   [
@@ -3172,6 +3255,7 @@
    "No",
    "No",
    "No",
+   "Yes",
    "Yes",
    "Yes",
    "Yes",
@@ -3191,6 +3275,7 @@
    "Yes",
    "Yes",
    "Yes",
+   "Yes",
    "Yes"
   ],
   [
@@ -3205,7 +3290,8 @@
    "Yes",
    "No",
    "Yes",
-   "No"
+   "No",
+   "Yes"
   ],
   [
    "YSL Beauty",
@@ -3216,6 +3302,7 @@
    "No",
    "Yes",
    "No",
+   "Yes",
    "Yes",
    "Yes",
    "Yes",
@@ -3233,6 +3320,7 @@
    "Yes",
    "Yes",
    "Yes",
+   "Yes",
    "Yes"
   ],
   [
@@ -3247,7 +3335,8 @@
    "Yes",
    "Yes",
    "Yes",
-   "No"
+   "No",
+   "Yes"
   ],
   [
    "Tom Ford Beauty",
@@ -3258,6 +3347,7 @@
    "Yes",
    "No",
    "No",
+   "Yes",
    "Yes",
    "Yes",
    "Yes",
@@ -3275,6 +3365,7 @@
    "Yes",
    "Yes",
    "Yes",
+   "Yes",
    "Yes"
   ],
   [
@@ -3289,7 +3380,8 @@
    "No",
    "No",
    "Yes",
-   "No"
+   "No",
+   "Yes"
   ],
   [
    "Prada Beauty",
@@ -3303,6 +3395,7 @@
    "Yes",
    "No",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -3317,6 +3410,7 @@
    "Yes",
    "Yes",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -3331,7 +3425,8 @@
    "Yes",
    "Yes",
    "Yes",
-   "No"
+   "No",
+   "Yes"
   ],
   [
    "Clé de Peau Beauté",
@@ -3342,6 +3437,7 @@
    "No",
    "Yes",
    "No",
+   "Yes",
    "Yes",
    "Yes",
    "Yes",
@@ -3359,6 +3455,7 @@
    "Yes",
    "Yes",
    "Yes",
+   "Yes",
    "Yes"
   ],
   [
@@ -3372,6 +3469,7 @@
    "No",
    "No",
    "No",
+   "Yes",
    "Yes",
    "Yes"
   ],
@@ -3387,6 +3485,7 @@
    "Yes",
    "No",
    "Yes",
+   "Yes",
    "Yes"
   ],
   [
@@ -3401,6 +3500,7 @@
    "No",
    "Yes",
    "Yes",
+   "No",
    "No"
   ],
   [
@@ -3415,10 +3515,12 @@
    "Yes",
    "Yes",
    "Yes",
+   "Yes",
    "Yes"
   ],
   [
    "KIKO Milano",
+   "No",
    "No",
    "No",
    "No",
@@ -10509,8 +10611,8 @@
    "",
    "Love Beverly Hills (lovebeverlyhills.com) for address and phone",
    "Nov 11, 2026",
-   "Hours left blank: sources disagree. Neiman Marcus isn't on the Chain carries tab yet, so its brands aren't checked.",
-   "",
+   "Hours left blank: sources disagree. Brands from the Neiman Marcus column on the Chain carries tab (neimanmarcus.com makeup Designer filter, Nov 11, 2026).",
+   "Neiman Marcus",
    "",
    "",
    "Los Angeles",
@@ -13473,6 +13575,24 @@
    "",
    "",
    "Los Angeles"
+  ],
+  [
+   "Charlotte Tilbury The Grove",
+   "Brand store",
+   "189 The Grove Dr Suite P80, Los Angeles, CA 90036",
+   "Los Angeles",
+   "Fairfax",
+   "(310) 651-6830",
+   "https://stores.charlottetilbury.com/us/ca/los-angeles/189-the-grove-dr",
+   "",
+   "Charlotte Tilbury store locator (stores.charlottetilbury.com)",
+   "Nov 11, 2026",
+   "Charlotte Tilbury's own flagship store, on its store locator (Nov 11, 2026). Hours left blank until rechecked.",
+   "",
+   "",
+   "",
+   "Los Angeles",
+   ""
   ]
  ]
 }
