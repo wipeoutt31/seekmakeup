@@ -258,7 +258,7 @@ def store_card(s, badges, brand_names=None):
 
 # ---------- brand pages ----------
 def brand_page(b):
-    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (not featured(x[0]), METRO_LIST.index(x[0]["metro"]), BOROUGHS.index(x[0]["Borough"]), x[0]["Store type"] != "Brand store", sk(x[0]["Neighborhood"]), sk(x[0]["Store"])))
+    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (not featured(x[0]), METRO_LIST.index(x[0]["metro"]), x[0]["Store type"] != "Brand store", BOROUGHS.index(x[0]["Borough"]), sk(x[0]["Neighborhood"]), sk(x[0]["Store"])))
     n = len(lst)
     tags = "".join(f'<a class="tag" href="/makeup/{slugify(c)}/">{esc(CAT_LABEL.get(c, c))}</a>' for c in b["cats"])
     if n:
