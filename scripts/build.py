@@ -30,9 +30,9 @@ CAT_LABEL = {"Setting powder or spray": "Setting powder & spray", "Contour or br
              "Lipstick or liquid lip": "Lipstick & liquid lip"}
 TIER_ORDER = ["Luxury", "Prestige", "Mid-range", "Drugstore"]
 TYPE_FILTER = {"Beauty chain": "beauty", "Brand store": "beauty", "Department store": "dept",
-               "Drugstore": "drug", "Big-box store": "drug"}
+               "Drugstore": "drug", "Big-box store": "drug", "Indie boutique": "beauty"}
 TYPE_LABEL = {"Beauty chain": "Beauty store", "Brand store": "Brand store", "Department store": "Department store",
-              "Drugstore": "Drugstore", "Big-box store": "Big-box store"}
+              "Drugstore": "Drugstore", "Big-box store": "Big-box store", "Indie boutique": "Independent shop"}
 
 def esc(s): return html.escape(str(s or ""), quote=True)
 
@@ -258,7 +258,7 @@ def store_page(s):
                             for b, sel in sorted(groups[t], key=lambda x: x[0]["Brand"].lower()))
             gh += f'<section class="group"><h3>{esc(t)}</h3><div class="rows">{items}</div></section>'
         vtxt = " Shelves at this kind of store vary, so not every brand or shade may be in stock." if varies else (" Individual stores may not stock every brand on the chain's list." if s.get("Chain") else "")
-        brandsec = f'<section class="wrap"><h2>Makeup brands carried here ({len(lst)})</h2><p class="sub">Grouped by price range. From the {"store" if s["Store type"] == "Brand store" else "chain"}\'s own brand list, last checked {esc(s.get("Last checked", ""))}.{vtxt}</p>{gh}</section>'
+        brandsec = f'<section class="wrap"><h2>Makeup brands carried here ({len(lst)})</h2><p class="sub">Grouped by price range. From the {"store" if s["Store type"] in ("Brand store", "Indie boutique") else "chain"}\'s own brand list, last checked {esc(s.get("Last checked", ""))}.{vtxt}</p>{gh}</section>'
     elif s["public_note"]:
         brandsec = ""
     else:
