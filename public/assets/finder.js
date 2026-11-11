@@ -56,7 +56,7 @@
     }).filter(function (r) { return r.hit.length >= need; })
       .sort(function (a, b) { return b.hit.length - a.hit.length || (a.s[2] !== 'Brand store') - (b.s[2] !== 'Brand store') || a.s[3].localeCompare(b.s[3]) || a.s[0].localeCompare(b.s[0]); });
     var names = chosen.map(function (i) { return data.b[i][0]; });
-    var head = res.length + ' store' + (res.length === 1 ? '' : 's') + ' in ' + (boro || 'Manhattan, Brooklyn and Queens') + ' carry ' +
+    var head = res.length + ' store' + (res.length === 1 ? '' : 's') + ' in ' + (boro || 'New York City') + ' carry ' +
       (chosen.length === 1 ? esc(names[0]) : (all.checked ? 'all of: ' : 'at least one of: ') + names.map(esc).join(', '));
     var links = chosen.map(function (i) { return '<a href="/brands/' + data.b[i][1] + '/">' + esc(data.b[i][0]) + ' page</a>'; }).join(' · ');
     if (!res.length) {

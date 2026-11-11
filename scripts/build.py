@@ -11,8 +11,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUB = os.path.join(ROOT, "public")
 DATA = json.load(open(os.path.join(ROOT, "data", "sheet.json"), encoding="utf-8"))
 SITE = "https://seekmakeup.com"
-BOROUGHS = ["Manhattan", "Brooklyn", "Queens"]
-AREA = ", ".join(BOROUGHS[:-1]) + " and " + BOROUGHS[-1]
+BOROUGHS = ["Manhattan", "Brooklyn", "Queens", "The Bronx", "Staten Island"]
+AREA = "New York City" if len(BOROUGHS) == 5 else ", ".join(BOROUGHS[:-1]) + " and " + BOROUGHS[-1]
 CITY = "New York City"
 TODAY = "2026-11-10"
 
@@ -224,7 +224,7 @@ def brand_page(b):
     ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Brands", "item": SITE + "/brands/"},
         {"@type": "ListItem", "position": 2, "name": b["Brand"], "item": f'{SITE}/brands/{b["slug"]}/'}]}
-    page(f'/brands/{b["slug"]}/', f'Where to buy {b["Brand"]} in {AREA}, NYC | SeekMakeup',
+    page(f'/brands/{b["slug"]}/', f'Where to buy {b["Brand"]} in {AREA}{'' if AREA == 'New York City' else ', NYC'} | SeekMakeup',
          f'{count.replace("carry this brand", "carry " + b["Brand"])}: addresses, phone numbers and directions. Store listings only, no live inventory.',
          body, crumbs=[("Brands", "/brands/"), (b["Brand"], None)], jsonld=ld, scripts=FILTER_JS)
 
@@ -359,7 +359,7 @@ json.dump(idx, open(os.path.join(PUB, "assets", "search.json"), "w", encoding="u
 popular = ["Fenty Beauty", "Rare Beauty", "Charlotte Tilbury", "MAC Cosmetics", "NARS", "Maybelline New York", "e.l.f. Cosmetics", "Dior Beauty"]
 pop = "".join(f'<a class="tag" href="/brands/{brand_by_name[p]["slug"]}/">{esc(p)}</a>' for p in popular if p in brand_by_name)
 home = f'''<section class="hero"><div class="wrap">
-<span class="pill">Now in {AREA} · more of NYC coming</span>
+<span class="pill">{"Now in all five boroughs of NYC" if len(BOROUGHS) == 5 else f"Now in {AREA} · more of NYC coming"}</span>
 <h1>Find the stores that carry your makeup brands.</h1>
 <p class="lede">Search one brand or several to see which {AREA} stores carry them, so you know where to look before you go.</p>
 <div class="notice" role="note">{ICON_INFO}<p><strong>No real-time inventory tracking.</strong> SeekMakeup is a directory of makeup brands and the stores that sell them. We can't tell you whether a product or shade is in stock today, so call the store before you go.</p></div>
@@ -377,7 +377,7 @@ home = f'''<section class="hero"><div class="wrap">
 <section class="wrap"><h2>Popular brands</h2><div class="tags big">{pop}</div><p class="small"><a href="/brands/">See all {len(brands)} brands →</a> · <a href="/stores/">Browse {len(stores)} stores →</a></p></section>
 <section class="wrap"><h2>Shop by what you need</h2>{cat_tags_html()}</section>
 <section class="wrap"><div class="help"><h2>Own a store?</h2><p>Claim your free listing and tell us which brands you carry.</p><a href="/contact.html?reason=I+own+a+store">Claim your store →</a></div></section>
-<section class="wrap signup"><h2>Get updates</h2><p class="sub">We'll email you when we add the Bronx and Staten Island. No spam.</p>
+<section class="wrap signup"><h2>Get updates</h2><p class="sub">We'll email you when we add new cities and stores. No spam.</p>
 <form name="launch-list" method="POST" action="/api/subscribe" class="inline">
 <p class="hidden"><label>Leave this empty <input name="company"></label></p>
 <label class="sr" for="email">Email address</label><input id="email" type="email" name="email" placeholder="you@example.com" required autocomplete="email"><button type="submit">Notify me</button></form>
