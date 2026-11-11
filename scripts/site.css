@@ -111,3 +111,4 @@ h2{font-size:22px;margin:32px 0 10px}
 .badge.featured{background:var(--accent,#A3214F);color:#fff}.card.isfeatured{border-color:var(--accent,#A3214F);box-shadow:0 0 0 1px var(--accent,#A3214F) inset}
 .status{font-size:13px;color:var(--muted,#6A6670);margin:4px 0 8px}.status.ok{color:#1F5A33;font-weight:600}
 .nearbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}.nearbtn{height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--accent,#A3214F);background:#fff;color:var(--accent,#A3214F);font-weight:600;font-size:14px;cursor:pointer}.nearbtn:disabled{background:var(--accent,#A3214F);color:#fff;cursor:default}.nearmsg{font-size:13px;color:var(--muted,#6A6670)}.dist{font-size:13px;font-weight:600;color:var(--ink,#1C1B1F);margin:4px 0 0}
+[hidden]{display:none!important}
