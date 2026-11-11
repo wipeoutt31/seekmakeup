@@ -34,6 +34,8 @@ METRO_LIST = [m for m in METROS if m in LIVE_METROS]
 BOROUGHS = [a for m in METRO_LIST for a in METROS[m]["areas"]]  # every live area, in order
 AREA_METRO = {a: m for m in METRO_LIST for a in METROS[m]["areas"]}
 AREA = " and ".join(METRO_LIST) if len(METRO_LIST) < 3 else ", ".join(METRO_LIST[:-1]) + " and " + METRO_LIST[-1]
+AREA_LABEL = {"Los Angeles": "City of Los Angeles"}  # the city, as opposed to the LA area
+def alabel(a): return AREA_LABEL.get(a, a)
 SHORT = " and ".join(METROS[m]["short"] for m in METRO_LIST)
 TODAY = "2026-11-10"
 
@@ -273,7 +275,7 @@ def brand_page(b):
         if len(boros) > 1:
             single = mets[0] if len(mets) == 1 else ""
             areachips = (f'<div class="chips boro" role="group" aria-label="Filter by area"{"" if single else " hidden"}>' + chip("b", "all", "All areas") +
-                         "".join(chip("b", bo, bo + f" ({sum(1 for s, _ in lst if s['Borough'] == bo)})", f' data-metro="{esc(AREA_METRO[bo])}"') for bo in boros) + '</div>')
+                         "".join(chip("b", bo, alabel(bo) + f" ({sum(1 for s, _ in lst if s['Borough'] == bo)})", f' data-metro="{esc(AREA_METRO[bo])}"') for bo in boros) + '</div>')
         citychips = ""
         if len(mets) > 1:
             citychips = '<div class="chips city" role="group" aria-label="Filter by city">' + chip("m", "all", f"Both cities ({n})") + "".join(chip("m", m, f"{m} ({cc[m]})") for m in mets) + '</div>'
@@ -472,7 +474,7 @@ page("/brands/", f"Makeup brands and where to buy them in {SHORT} | SeekMakeup",
 
 # Stores index, by neighborhood
 def _bid(bo): return slugify(bo) + ("-city" if bo in METROS else "")  # LA the city vs Los Angeles the metro
-si = "".join(f'<p class="small"><strong>{esc(m)}:</strong> ' + " · ".join(f'<a href="#{_bid(bo)}">{bo}</a>' for bo in METROS[m]["areas"] if any(s["Borough"] == bo for s in stores)) + '</p>' for m in METRO_LIST)
+si = "".join(f'<p class="small"><strong>{esc(m)}:</strong> ' + " · ".join(f'<a href="#{_bid(bo)}">{esc(alabel(bo))}</a>' for bo in METROS[m]["areas"] if any(s["Borough"] == bo for s in stores)) + '</p>' for m in METRO_LIST)
 for bo in BOROUGHS:
     if bo == METROS[AREA_METRO[bo]]["areas"][0]:
         m = AREA_METRO[bo]
@@ -481,7 +483,7 @@ for bo in BOROUGHS:
     for s in stores:
         if s["Borough"] == bo: hoods[hood(s)].append(s)
     if not hoods: continue
-    si += f'<h2 id="{_bid(bo)}" class="borohead">{bo} <span class="sub">({sum(len(v) for v in hoods.values())} stores)</span></h2>'
+    si += f'<h2 id="{_bid(bo)}" class="borohead">{esc(alabel(bo))} <span class="sub">({sum(len(v) for v in hoods.values())} stores)</span></h2>'
     for h in sorted(hoods, key=sk):
         si += f'<section class="group"><h3>{esc(h)}</h3><div class="rows">' + "".join(
             f'<a class="row" href="/stores/{s["slug"]}/"><span><span class="rowtitle">{esc(s["Store"])}</span><span class="rowsub">{esc(street(s))} · {len(by_store.get(s["Store"], []))} brands</span></span>{CHEV}</a>'
@@ -522,7 +524,7 @@ home = f'''<section class="hero"><div class="wrap">
 <p id="qhint" class="hint">Add as many brands as you like.</p>
 <label class="check"><input id="all" type="checkbox"> Only show stores that carry all of these brands</label>
 <label for="area" class="arealabel">Area</label>
-<select id="area" class="area"><option value="">Both cities</option>{"".join(f'<optgroup label="{esc(m)}"><option value="m:{esc(m)}">All of {esc(m)}</option>' + "".join(f'<option value="{esc(bo)}">{esc(bo)}{" (city)" if bo in METROS else ""}</option>' for bo in METROS[m]["areas"]) + '</optgroup>' for m in METRO_LIST)}</select>
+<select id="area" class="area"><option value="">Both cities</option>{"".join(f'<optgroup label="{esc(m)}"><option value="m:{esc(m)}">All of {"the " + esc(m) + " area" if m == "Los Angeles" else esc(m)}</option>' + "".join(f'<option value="{esc(bo)}">{esc(alabel(bo))}</option>' for bo in METROS[m]["areas"]) + '</optgroup>' for m in METRO_LIST)}</select>
 </form>
 </div></section>
 <section class="wrap" id="results" aria-live="polite"></section>

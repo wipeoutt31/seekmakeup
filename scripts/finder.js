@@ -52,7 +52,7 @@
     if (!chosen.length) { out.innerHTML = ''; return; }
     var need = all.checked ? chosen.length : 1;
     var boro = area ? area.value : '', metro = boro.indexOf('m:') === 0 ? boro.slice(2) : '';
-    var label = metro || (boro ? area.options[area.selectedIndex].text.replace(' (city)', '') : (data.m || ['New York City']).join(' and '));
+    var label = metro ? (metro === 'Los Angeles' ? 'the Los Angeles area' : metro) : (boro ? (boro === 'Los Angeles' ? 'the City of Los Angeles' : boro) : (data.m || ['New York City']).join(' and '));
     var res = data.s.filter(function (s) { return !boro || (metro ? s[10] === metro : s[7] === boro); }).map(function (s) {
       var hit = chosen.filter(function (i) { return s[5].indexOf(i) >= 0; });
       return { s: s, hit: hit };
