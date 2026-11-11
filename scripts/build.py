@@ -34,6 +34,10 @@ TYPE_FILTER = {"Beauty chain": "beauty", "Brand store": "beauty", "Department st
 TYPE_LABEL = {"Beauty chain": "Beauty store", "Brand store": "Brand store", "Department store": "Department store",
               "Drugstore": "Drugstore", "Big-box store": "Big-box store", "Indie boutique": "Independent shop"}
 
+def sk(name):  # A–Z sort key: ignore case, punctuation and a leading "The"
+    n = re.sub(r"[^a-z0-9 ]", "", unicodedata.normalize("NFKD", str(name)).encode("ascii", "ignore").decode().lower()).strip()
+    return re.sub(r"^the ", "", n)
+
 def esc(s): return html.escape(str(s or ""), quote=True)
 
 def slugify(s):
@@ -189,7 +193,7 @@ def store_card(s, badges, brand_names=None):
 
 # ---------- brand pages ----------
 def brand_page(b):
-    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (BOROUGHS.index(x[0]["Borough"]), x[0]["Store type"] != "Brand store", x[0]["Neighborhood"], x[0]["Store"]))
+    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (BOROUGHS.index(x[0]["Borough"]), x[0]["Store type"] != "Brand store", sk(x[0]["Neighborhood"]), sk(x[0]["Store"])))
     n = len(lst)
     tags = "".join(f'<a class="tag" href="/makeup/{slugify(c)}/">{esc(CAT_LABEL.get(c, c))}</a>' for c in b["cats"])
     if n:
@@ -255,7 +259,7 @@ def store_page(s):
         for t in TIER_ORDER:
             if t not in groups: continue
             items = "".join(f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(makes(b, 5))}</span></span>{CHEV}</a>'
-                            for b, sel in sorted(groups[t], key=lambda x: x[0]["Brand"].lower()))
+                            for b, sel in sorted(groups[t], key=lambda x: sk(x[0]["Brand"])))
             gh += f'<section class="group"><h3>{esc(t)}</h3><div class="rows">{items}</div></section>'
         vtxt = " Shelves at this kind of store vary, so not every brand or shade may be in stock." if varies else (" Individual stores may not stock every brand on the chain's list." if s.get("Chain") else "")
         brandsec = f'<section class="wrap"><h2>Makeup brands carried here ({len(lst)})</h2><p class="sub">Grouped by price range. From the {"store" if s["Store type"] in ("Brand store", "Indie boutique") else "chain"}\'s own brand list, last checked {esc(s.get("Last checked", ""))}.{vtxt}</p>{gh}</section>'
@@ -284,7 +288,7 @@ def store_page(s):
 
 # ---------- category pages ----------
 def cat_page(c):
-    lst = sorted([b for b in brands if c in b["cats"]], key=lambda b: (-len(by_brand.get(b["Brand"], [])), b["Brand"].lower()))
+    lst = sorted([b for b in brands if c in b["cats"]], key=lambda b: sk(b["Brand"]))
     items = "".join(f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(b["Price tier"])} · {len(by_brand.get(b["Brand"], []))} {AREA} stores</span></span>{CHEV}</a>' for b in lst)
     label = CAT_LABEL.get(c, c)
     body = f'''<section class="intro"><div class="wrap"><h1>{esc(label)}: brands and where to buy them in {AREA}</h1>
@@ -313,8 +317,8 @@ for c in CATS: cat_page(c)
 
 # Brands index
 letters = defaultdict(list)
-for b in sorted(brands, key=lambda b: b["Brand"].lower()):
-    L = unicodedata.normalize("NFKD", b["Brand"])[0].upper()
+for b in sorted(brands, key=lambda b: sk(b["Brand"])):
+    L = (sk(b["Brand"]) or "#")[0].upper()
     letters[L if L.isalpha() else "#"].append(b)
 bi = ""
 for L in sorted(letters):
@@ -332,10 +336,10 @@ for bo in BOROUGHS:
     for s in stores:
         if s["Borough"] == bo: hoods[s["Neighborhood"]].append(s)
     si += f'<h2 id="{slugify(bo)}" class="borohead">{bo} <span class="sub">({sum(len(v) for v in hoods.values())} stores)</span></h2>'
-    for h in sorted(hoods):
+    for h in sorted(hoods, key=sk):
         si += f'<section class="group"><h3>{esc(h)}</h3><div class="rows">' + "".join(
             f'<a class="row" href="/stores/{s["slug"]}/"><span><span class="rowtitle">{esc(s["Store"])}</span><span class="rowsub">{esc(street(s))} · {len(by_store.get(s["Store"], []))} brands</span></span>{CHEV}</a>'
-            for s in sorted(hoods[h], key=lambda s: s["Store"])) + '</div></section>'
+            for s in sorted(hoods[h], key=lambda s: sk(s["Store"]))) + '</div></section>'
 page("/stores/", f"Makeup stores in {AREA} by neighborhood | SeekMakeup",
      f"{len(stores)} {AREA} stores that sell makeup, from Sephora and Ulta to department stores, drugstores and brand boutiques.",
      f'<section class="intro"><div class="wrap"><h1>Stores in {AREA}</h1><p class="count">{len(stores)} stores, by borough and neighborhood.</p>{NOTICE}</div></section><section class="wrap">{si}</section>',
@@ -348,7 +352,7 @@ page("/makeup/", f"Shop makeup by category in {AREA} | SeekMakeup",
      crumbs=[("Makeup", None)])
 
 # Search index for the home page
-idx = {"b": [[b["Brand"], b["slug"]] for b in sorted(brands, key=lambda b: b["Brand"].lower())]}
+idx = {"b": [[b["Brand"], b["slug"]] for b in sorted(brands, key=lambda b: sk(b["Brand"]))]}
 bpos = {name: i for i, (name, _) in enumerate(idx["b"])}
 idx["s"] = []
 for s in stores:
@@ -359,7 +363,7 @@ json.dump(idx, open(os.path.join(PUB, "assets", "search.json"), "w", encoding="u
 
 # Home page
 popular = ["Fenty Beauty", "Rare Beauty", "Charlotte Tilbury", "MAC Cosmetics", "NARS", "Maybelline New York", "e.l.f. Cosmetics", "Dior Beauty"]
-pop = "".join(f'<a class="tag" href="/brands/{brand_by_name[p]["slug"]}/">{esc(p)}</a>' for p in popular if p in brand_by_name)
+pop = "".join(f'<a class="tag" href="/brands/{brand_by_name[p]["slug"]}/">{esc(p)}</a>' for p in sorted(popular, key=sk) if p in brand_by_name)
 home = f'''<section class="hero"><div class="wrap">
 <span class="pill">{"Now in all five boroughs of NYC" if len(BOROUGHS) == 5 else f"Now in {AREA} · more of NYC coming"}</span>
 <h1>Find the stores that carry your makeup brands.</h1>
