@@ -38,6 +38,10 @@ def sk(name):  # A–Z sort key: ignore case, punctuation and a leading "The"
     n = re.sub(r"[^a-z0-9 ]", "", unicodedata.normalize("NFKD", str(name)).encode("ascii", "ignore").decode().lower()).strip()
     return re.sub(r"^the ", "", n)
 
+def nstores(b, where=""):  # "12 New York City stores", "1 store", or "No NYC stores found yet"
+    n = len(by_brand.get(b["Brand"], []))
+    return f"{n}{where} store{'s' if n != 1 else ''}" if n else "No NYC stores found yet"
+
 def esc(s): return html.escape(str(s or ""), quote=True)
 
 def slugify(s):
@@ -210,7 +214,7 @@ def brand_page(b):
         count = f'{n} store{"s" if n != 1 else ""} in {AREA} carry this brand'
         listing = f'{chiphtml}<div class="cards" id="list">{cards}</div>'
     else:
-        count = f"We haven't found a {AREA} store that carries {b['Brand']} yet"
+        count = "No NYC stores found yet"
         online = ""
         if b.get("Website"):
             dom = re.sub(r"^https?://(www\.)?", "", b["Website"])
@@ -231,7 +235,7 @@ def brand_page(b):
         {"@type": "ListItem", "position": 1, "name": "Brands", "item": SITE + "/brands/"},
         {"@type": "ListItem", "position": 2, "name": b["Brand"], "item": f'{SITE}/brands/{b["slug"]}/'}]}
     page(f'/brands/{b["slug"]}/', f'Where to buy {b["Brand"]} in {AREA}{'' if AREA == 'New York City' else ', NYC'} | SeekMakeup',
-         f'{count.replace("carry this brand", "carry " + b["Brand"])}: addresses, phone numbers and directions. Store listings only, no live inventory.',
+         (f'{count.replace("carry this brand", "carry " + b["Brand"])}: addresses, phone numbers and directions. Store listings only, no live inventory.' if lst else f'We haven\'t found a {AREA} store that carries {b["Brand"]} yet. Store listings only, no live inventory.'),
          body, crumbs=[("Brands", "/brands/"), (b["Brand"], None)], jsonld=ld, scripts=FILTER_JS)
 
 FILTER_JS = '''<script>
@@ -289,7 +293,7 @@ def store_page(s):
 # ---------- category pages ----------
 def cat_page(c):
     lst = sorted([b for b in brands if c in b["cats"]], key=lambda b: sk(b["Brand"]))
-    items = "".join(f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(b["Price tier"])} · {len(by_brand.get(b["Brand"], []))} {AREA} stores</span></span>{CHEV}</a>' for b in lst)
+    items = "".join(f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(b["Price tier"])} · {nstores(b, " " + AREA)}</span></span>{CHEV}</a>' for b in lst)
     label = CAT_LABEL.get(c, c)
     body = f'''<section class="intro"><div class="wrap"><h1>{esc(label)}: brands and where to buy them in {AREA}</h1>
 <p class="count">{len(lst)} brands make {esc(label.lower())}. Pick a brand to see the {AREA} stores that carry it.</p>
@@ -323,7 +327,7 @@ for b in sorted(brands, key=lambda b: sk(b["Brand"])):
 bi = ""
 for L in sorted(letters):
     bi += f'<section class="group"><h3>{L}</h3><div class="rows">' + "".join(
-        f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(b["Price tier"])} · {len(by_brand.get(b["Brand"], []))} stores</span></span>{CHEV}</a>' for b in letters[L]) + '</div></section>'
+        f'<a class="row" href="/brands/{b["slug"]}/"><span><span class="rowtitle">{esc(b["Brand"])}</span><span class="rowsub">{esc(b["Price tier"])} · {nstores(b)}</span></span>{CHEV}</a>' for b in letters[L]) + '</div></section>'
 page("/brands/", f"Makeup brands and where to buy them in {AREA} | SeekMakeup",
      f"{len(brands)} makeup brands, from drugstore to luxury, and the {AREA} stores that carry each one.",
      f'<section class="intro"><div class="wrap"><h1>Makeup brands</h1><p class="count">{len(brands)} brands. Pick one to see the {AREA} stores that carry it.</p>{NOTICE}</div></section><section class="wrap">{bi}</section>',
