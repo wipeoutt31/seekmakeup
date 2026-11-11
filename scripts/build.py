@@ -79,7 +79,8 @@ for b in brands:
     b["cats"] = [c for c in CATS if str(b.get(c, "")).upper() == "TRUE"]
 brand_by_name = {b["Brand"]: b for b in brands}
 
-stores = [s for s in rows("Stores") if s.get("Borough") in BOROUGHS]
+LIVE_METROS = {"New York City"}  # add "Los Angeles" here when LA launches
+stores = [s for s in rows("Stores") if (s.get("Metro") or "New York City") in LIVE_METROS and s.get("Borough") in BOROUGHS]
 seen = set()
 for s in stores:
     sl = slugify(s["Store"])
