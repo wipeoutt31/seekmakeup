@@ -485,7 +485,7 @@ for bo in BOROUGHS:
     if not hoods: continue
     si += f'<h2 id="{_bid(bo)}" class="borohead">{esc(alabel(bo))} <span class="sub">({sum(len(v) for v in hoods.values())} stores)</span></h2>'
     for h in sorted(hoods, key=sk):
-        si += f'<section class="group"><h3>{esc(h)}</h3><div class="rows">' + "".join(
+        si += f'<section class="group">{"" if h == bo else "<h3>" + esc(h) + "</h3>"}<div class="rows">' + "".join(
             f'<a class="row" href="/stores/{s["slug"]}/"><span><span class="rowtitle">{esc(s["Store"])}</span><span class="rowsub">{esc(street(s))} · {len(by_store.get(s["Store"], []))} brands</span></span>{CHEV}</a>'
             for s in sorted(hoods[h], key=lambda s: sk(s["Store"]))) + '</div></section>'
 page("/stores/", f"Makeup stores in {SHORT} by neighborhood | SeekMakeup",
