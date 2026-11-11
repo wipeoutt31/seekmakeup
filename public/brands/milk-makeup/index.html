@@ -559,7 +559,8 @@
 function on(c){c.parentNode.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false')});c.classList.add('on');c.setAttribute('aria-pressed','true')}
 chips.forEach(function(c){c.addEventListener('click',function(){var k=c.dataset.m!==undefined?'m':c.dataset.b!==undefined?'b':'f';on(c);F[k]=c.dataset[k];
 if(k==='m'){var row=document.querySelector('.chips.boro');F.b='all';if(row){var vis=0;row.querySelectorAll('.chip').forEach(function(x){if(x.dataset.b==='all'){on(x);return}x.hidden=x.dataset.metro!==F.m;if(!x.hidden)vis++});row.hidden=F.m==='all'||vis<2}}
-document.querySelectorAll('#list .store').forEach(function(s){s.hidden=!((F.f==='all'||s.dataset.type===F.f)&&(F.m==='all'||s.dataset.metro===F.m)&&(F.b==='all'||s.dataset.boro===F.b))})})})})();
+document.querySelectorAll('#list .store').forEach(function(s){s.hidden=!((F.f==='all'||s.dataset.type===F.f)&&(F.m==='all'||s.dataset.metro===F.m)&&(F.b==='all'||s.dataset.boro===F.b))})})});
+var c=({la:'Los Angeles',nyc:'New York City'})[(new URLSearchParams(location.search).get('city')||'').toLowerCase()];if(c){var x=document.querySelector('.chip[data-m="'+c+'"]');if(x)x.click()}})();
 (function(){var b=document.getElementById('nearme');if(!b)return;var msg=document.getElementById('nearmsg');
 function mi(a,c,d,e){var r=Math.PI/180,x=(d-a)*r,y=(e-c)*r,h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(d*r)*Math.sin(y/2)*Math.sin(y/2);return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))}
 b.addEventListener('click',function(){if(!navigator.geolocation){msg.textContent='Your browser is not able to share your location.';return}
