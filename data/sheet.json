@@ -2301,6 +2301,125 @@
    "Full line",
    "Charlotte Tilbury store locator (stores.charlottetilbury.com)",
    "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "Anastasia Beverly Hills",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "Bobbi Brown",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "Huda Beauty",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "Laura Mercier",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "MAC Cosmetics",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "Make Up For Ever",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "NARS",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "NYX Professional Makeup",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Naimie's Burbank",
+   "Smashbox",
+   "Selection varies",
+   "Naimie's brand directory (naimies.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Frends Beauty",
+   "Anastasia Beverly Hills",
+   "Selection varies",
+   "Frends Beauty brand list (frendsbeauty.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Frends Beauty",
+   "Danessa Myricks Beauty",
+   "Selection varies",
+   "Frends Beauty brand list (frendsbeauty.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Frends Beauty",
+   "Kevyn Aucoin",
+   "Selection varies",
+   "Frends Beauty brand list (frendsbeauty.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Frends Beauty",
+   "Laura Mercier",
+   "Selection varies",
+   "Frends Beauty brand list (frendsbeauty.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Frends Beauty",
+   "Make Up For Ever",
+   "Selection varies",
+   "Frends Beauty brand list (frendsbeauty.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Frends Beauty",
+   "Nudestix",
+   "Selection varies",
+   "Frends Beauty brand list (frendsbeauty.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Frends Beauty",
+   "NYX Professional Makeup",
+   "Selection varies",
+   "Frends Beauty brand list (frendsbeauty.com)",
+   "Nov 11, 2026"
+  ],
+  [
+   "Frends Beauty",
+   "RMS Beauty",
+   "Selection varies",
+   "Frends Beauty brand list (frendsbeauty.com)",
+   "Nov 11, 2026"
   ]
  ],
  "Chain carries": [
@@ -13565,7 +13684,7 @@
   [
    "Charlotte Tilbury The Grove",
    "Brand store",
-   "189 The Grove Dr Suite P80, Los Angeles, CA 90036",
+   "189 The Grove Dr Suite O30, Los Angeles, CA 90036",
    "Los Angeles",
    "Fairfax",
    "(310) 651-6830",
@@ -13573,7 +13692,43 @@
    "",
    "Charlotte Tilbury store locator (stores.charlottetilbury.com)",
    "Nov 11, 2026",
-   "Charlotte Tilbury's own flagship store, on its store locator (Nov 11, 2026). Hours left blank until rechecked.",
+   "Charlotte Tilbury's own flagship store, on its store locator (Nov 11, 2026). Hours left blank: the store page's listed hours and its structured data disagree.",
+   "",
+   "",
+   "",
+   "Los Angeles",
+   ""
+  ],
+  [
+   "Naimie's Burbank",
+   "Indie boutique",
+   "2721 W Magnolia Blvd, Burbank, CA 91505",
+   "Burbank",
+   "",
+   "(818) 748-3212",
+   "https://www.naimies.com/pages/store-locations",
+   "Mon–Fri 10 am – 6 pm; Sat 10 am – 5 pm; Sun 11 am – 5 pm",
+   "Naimie's store page and brand directory (naimies.com)",
+   "Nov 11, 2026",
+   "Show on site: Independent pro beauty supply store for makeup artists and everyday shoppers, with makeup, skincare, hair care and studio supplies.",
+   "",
+   "",
+   "",
+   "Los Angeles",
+   ""
+  ],
+  [
+   "Frends Beauty",
+   "Indie boutique",
+   "5244 Laurel Canyon Blvd, North Hollywood, CA 91607",
+   "Los Angeles",
+   "North Hollywood",
+   "(818) 769-3834",
+   "https://frendsbeauty.com/pages/location",
+   "Mon–Sat 9 am – 5 pm; Sun closed",
+   "Frends Beauty location page, store details and brand list (frendsbeauty.com)",
+   "Nov 11, 2026",
+   "Show on site: Independent pro makeup store since 1940, known for theatrical and special effects makeup.",
    "",
    "",
    "",
