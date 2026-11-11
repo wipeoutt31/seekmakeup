@@ -104,3 +104,5 @@ h2{font-size:22px;margin:32px 0 10px}
 .area{width:100%;min-height:44px;padding:0 12px;border:1px solid #CFC9CD;border-radius:10px;background:#fff;font:inherit;font-size:16px;color:var(--ink)}
 .borohead{margin:32px 0 8px;scroll-margin-top:16px}
 .borohead .sub{font-size:15px;font-weight:400;color:var(--ink2)}
+.buyonline{margin:24px 0 0;padding:16px;border:1px solid var(--line,#E2DCE0);border-radius:14px}.buyonline h2{margin-top:0}.buyonline .btns .btn{flex:1 1 140px}
+.badge.featured{background:var(--accent,#A3214F);color:#fff}.card.isfeatured{border-color:var(--accent,#A3214F);box-shadow:0 0 0 1px var(--accent,#A3214F) inset}

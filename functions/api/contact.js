@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: saves contact-form messages to the SIGNUPS KV namespace under "msg:".
-const REASONS = ["Remove my email", "I own a store", "Report a change to a listing", "Question", "Report a problem", "Other"];
+const REASONS = ["Remove my email", "I own a store", "Report a change to a listing", "Question", "Report a problem", "Featured listing", "Other"];
 
 export async function onRequestPost({ request, env }) {
   const form = await request.formData();

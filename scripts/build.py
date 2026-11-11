@@ -12,6 +12,18 @@ from collections import defaultdict
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUB = os.path.join(ROOT, "public")
 DATA = json.load(open(os.path.join(ROOT, "data", "sheet.json"), encoding="utf-8"))
+AFF = json.load(open(os.path.join(ROOT, "data", "affiliates.json"), encoding="utf-8"))
+from urllib.parse import quote as _q
+def _aff(tpl, url): return tpl.replace("{url}", _q(url, safe="")) if tpl else url
+def buy_online(b):  # [(label, href, is_affiliate)]
+    out = []
+    if b.get("Website"):
+        t = AFF["brand_sites"]["by_brand"].get(b["Brand"], "")
+        out.append((f'{b["Brand"]} website', _aff(t, b["Website"]), bool(t)))
+    for name, r in AFF["retailers"].items():
+        if b["Brand"] in r["pages"]:
+            out.append((name, _aff(r["template"], r["pages"][b["Brand"]]), bool(r["template"])))
+    return out
 SITE = "https://seekmakeup.com"
 BOROUGHS = ["Manhattan", "Brooklyn", "Queens", "The Bronx", "Staten Island"]
 AREA = "New York City" if len(BOROUGHS) == 5 else ", ".join(BOROUGHS[:-1]) + " and " + BOROUGHS[-1]
@@ -180,6 +192,15 @@ def makes(b, n=6):
     labels = [CAT_LABEL.get(c, c) for c in b["cats"]]
     if len(labels) == len(CATS): return "Complexion, cheeks, eyes and lips"
     return " · ".join(labels[:n]) + (" · more" if len(labels) > n else "")
+import datetime as _dt
+TODAY = _dt.date.today()
+def featured(s):  # paid placement: "Featured until" date in the Stores tab, inclusive
+    v = str(s.get("Featured until", "")).strip()
+    for f in ("%b %d, %Y", "%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y"):
+        try: return _dt.datetime.strptime(v, f).date() >= TODAY
+        except ValueError: pass
+    return False
+
 def contact(reason, about): return "/contact.html?reason=" + re.sub(" ", "+", reason) + "&about=" + re.sub(r"\s+", "+", about).replace("&", "%26")
 
 def store_card(s, badges, brand_names=None):
@@ -187,7 +208,8 @@ def store_card(s, badges, brand_names=None):
     btns = f'<a class="btn primary" href="{esc(maps_url(s))}" rel="noopener" target="_blank">Directions</a>'
     if ph: btns += f'<a class="btn" href="{tel(ph)}">Call</a>'
     bd = "".join(f'<span class="badge {c}">{esc(t)}</span>' for t, c in badges)
-    return f'''<article class="card store" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-boro="{esc(s["Borough"])}" data-hood="{esc(s["Neighborhood"])}">
+    if featured(s): bd = '<span class="badge featured">Featured</span>' + bd
+    return f'''<article class="card store{" isfeatured" if featured(s) else ""}" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-boro="{esc(s["Borough"])}" data-hood="{esc(s["Neighborhood"])}">
 <div class="cardhead"><a class="cardtitle" href="/stores/{s["slug"]}/">{esc(s["Store"])}</a></div>
 <p class="meta">{esc(TYPE_LABEL.get(s["Store type"], s["Store type"]))} · {esc(where(s))}<br>{esc(s["Address"])}</p>
 <div class="badges">{bd}</div>
@@ -197,7 +219,7 @@ def store_card(s, badges, brand_names=None):
 
 # ---------- brand pages ----------
 def brand_page(b):
-    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (BOROUGHS.index(x[0]["Borough"]), x[0]["Store type"] != "Brand store", sk(x[0]["Neighborhood"]), sk(x[0]["Store"])))
+    lst = sorted(by_brand.get(b["Brand"], []), key=lambda x: (not featured(x[0]), BOROUGHS.index(x[0]["Borough"]), x[0]["Store type"] != "Brand store", sk(x[0]["Neighborhood"]), sk(x[0]["Store"])))
     n = len(lst)
     tags = "".join(f'<a class="tag" href="/makeup/{slugify(c)}/">{esc(CAT_LABEL.get(c, c))}</a>' for c in b["cats"])
     if n:
@@ -212,7 +234,8 @@ def brand_page(b):
                 for k, l in [("all", "All of " + AREA)] + [(bo, bo + f" ({sum(1 for s, _ in lst if s['Borough'] == bo)})") for bo in boros]) + '</div>' + chiphtml
         cards = "\n".join(store_card(s, [(f'Carries {b["Brand"]}', "ok")] + ([("Selection varies", "warn")] if sel == "Selection varies" else [])) for s, sel in lst)
         count = f'{n} store{"s" if n != 1 else ""} in {AREA} carry this brand'
-        listing = f'{chiphtml}<div class="cards" id="list">{cards}</div>'
+        fnote = '<p class="small">Stores marked Featured pay to be shown first.</p>' if any(featured(x[0]) for x in lst) else ""
+        listing = f'{chiphtml}<div class="cards" id="list">{cards}</div>{fnote}'
     else:
         count = "No NYC stores found yet"
         online = ""
@@ -220,6 +243,12 @@ def brand_page(b):
             dom = re.sub(r"^https?://(www\.)?", "", b["Website"])
             online = f' You can buy it online at <a href="{esc(b["Website"])}" rel="noopener">{esc(dom)}</a>.'
         listing = f'<div class="empty"><p>None of the stores we\'ve checked in {AREA} list {esc(b["Brand"])}.{online}</p></div>'
+    bo = buy_online(b)
+    buysec = ""
+    if bo:
+        links = "".join(f'<a class="btn" href="{esc(h)}" rel="{"sponsored " if af else ""}noopener" target="_blank">{esc(l)}</a>' for l, h, af in bo)
+        disc = ' <span class="small">We may earn a commission from these links, at no cost to you.</span>' if any(af for _, _, af in bo) else ""
+        buysec = f'<section class="wrap"><div class="buyonline"><h2>Buy {esc(b["Brand"])} online</h2><p class="sub">Shop the brand directly or at a retailer that sells it.{disc}</p><div class="btns">{links}</div></div></section>'
     note = f'<p class="brandnote">{esc(b["Notes"])}</p>' if b.get("Notes") and "checked" not in b.get("Notes", "") else ""
     site = f'<p class="meta">{esc(b["Price tier"])} · <a href="{esc(b["Website"])}" rel="noopener" target="_blank">Brand website</a></p>' if b.get("Website") else f'<p class="meta">{esc(b["Price tier"])}</p>'
     body = f'''<section class="intro"><div class="wrap">
@@ -230,6 +259,7 @@ def brand_page(b):
 {NOTICE}
 </div></section>
 <section class="wrap listing">{listing}</section>
+{buysec}
 <section class="wrap"><div class="help"><h2>See something wrong?</h2><p>Tell us if a store no longer carries {esc(b["Brand"])}, or if we're missing one.</p><a href="{esc(contact("Report a change to a listing", b["Brand"] + " (brand page)"))}">Report a change →</a></div></section>'''
     ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Brands", "item": SITE + "/brands/"},
@@ -280,7 +310,7 @@ def store_page(s):
 {pnote}
 </div></section>
 {brandsec}
-<section class="wrap"><div class="help"><h2>Is this your store?</h2><p>Claim this listing to update your brands and hours.</p><a href="{esc(contact("I own a store", s["Store"]))}">Claim this listing →</a></div>
+<section class="wrap"><div class="help"><h2>Is this your store?</h2><p>Claim this listing to update your brands and hours. It's free.</p><a href="{esc(contact("I own a store", s["Store"]))}">Claim this listing →</a><p class="small">Want more shoppers to see your store? Featured listings appear first on the brand pages for every brand you carry, with a Featured label. <a href="{esc(contact("Featured listing", s["Store"]))}">Ask about featured listings →</a></p></div>
 <p class="small"><a href="{esc(contact("Report a change to a listing", s["Store"]))}">Report a brand that's no longer here</a></p></section>'''
     ld = {"@context": "https://schema.org", "@type": "Store", "name": s["Store"], "url": f'{SITE}/stores/{s["slug"]}/',
           "address": {"@type": "PostalAddress", "streetAddress": street(s), "addressLocality": city(s),
@@ -386,7 +416,7 @@ home = f'''<section class="hero"><div class="wrap">
 <section class="wrap" id="results" aria-live="polite"></section>
 <section class="wrap"><h2>Popular brands</h2><div class="tags big">{pop}</div><p class="small"><a href="/brands/">See all {len(brands)} brands →</a> · <a href="/stores/">Browse {len(stores)} stores →</a></p></section>
 <section class="wrap"><h2>Shop by what you need</h2>{cat_tags_html()}</section>
-<section class="wrap"><div class="help"><h2>Own a store?</h2><p>Claim your free listing and tell us which brands you carry.</p><a href="/contact.html?reason=I+own+a+store">Claim your store →</a></div></section>
+<section class="wrap"><div class="help"><h2>Own a store?</h2><p>Claim your free listing and tell us which brands you carry.</p><a href="/contact.html?reason=I+own+a+store">Claim your store →</a><p class="small">Featured listings are also available. <a href="/contact.html?reason=Featured+listing">Ask about featured listings →</a></p></div></section>
 <section class="wrap signup"><h2>Get updates</h2><p class="sub">We'll email you when we add new cities and stores. No spam.</p>
 <form name="launch-list" method="POST" action="/api/subscribe" class="inline">
 <p class="hidden"><label>Leave this empty <input name="company"></label></p>
