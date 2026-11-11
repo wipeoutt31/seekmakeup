@@ -172,7 +172,7 @@ def page(path, title, desc, body, crumbs=None, jsonld=None, scripts=""):
 <meta property="og:url" content="{canon}">
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(desc)}">
-<meta property="og:image" content="{SITE}/og.png">
+<meta property="og:image" content="{SITE}/og.png?v=2">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
