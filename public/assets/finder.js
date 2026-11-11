@@ -42,6 +42,8 @@
   });
   all.addEventListener('change', render);
   if (area) area.addEventListener('change', render);
+  var me = null, nearmsg = '';
+  function miles(a, c, d, e) { var r = Math.PI / 180, x = (d - a) * r, y = (e - c) * r, h = Math.sin(x / 2) * Math.sin(x / 2) + Math.cos(a * r) * Math.cos(d * r) * Math.sin(y / 2) * Math.sin(y / 2); return 3958.8 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h)); }
   function render() {
     if (!data) return;
     picked.innerHTML = chosen.map(function (i) { return '<span class="pick">' + esc(data.b[i][0]) + '<button type="button" data-i="' + i + '" aria-label="Remove ' + esc(data.b[i][0]) + '">×</button></span>'; }).join('');
@@ -54,7 +56,8 @@
       var hit = chosen.filter(function (i) { return s[5].indexOf(i) >= 0; });
       return { s: s, hit: hit };
     }).filter(function (r) { return r.hit.length >= need; })
-      .sort(function (a, b) { return b.hit.length - a.hit.length || (a.s[2] !== 'Brand store') - (b.s[2] !== 'Brand store') || a.s[3].localeCompare(b.s[3]) || a.s[0].localeCompare(b.s[0]); });
+      .map(function (r) { r.d = (me && r.s[8] != null) ? miles(me[0], me[1], r.s[8], r.s[9]) : null; return r; })
+      .sort(function (a, b) { return b.hit.length - a.hit.length || (me ? ((a.d === null) - (b.d === null) || a.d - b.d) : 0) || (a.s[2] !== 'Brand store') - (b.s[2] !== 'Brand store') || a.s[3].localeCompare(b.s[3]) || a.s[0].localeCompare(b.s[0]); });
     var names = chosen.map(function (i) { return data.b[i][0]; });
     var head = res.length + ' store' + (res.length === 1 ? '' : 's') + ' in ' + (boro || 'New York City') + ' carry ' +
       (chosen.length === 1 ? esc(names[0]) : (all.checked ? 'all of: ' : 'at least one of: ') + names.map(esc).join(', '));
@@ -68,9 +71,17 @@
         (r.hit.some(function (i) { return s[6].indexOf(i) >= 0; }) ? '<span class="badge warn">Selection varies</span>' : '');
       var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s[0] + ', ' + s[4]);
       return '<article class="card store"><div class="cardhead"><a class="cardtitle" href="/stores/' + s[1] + '/">' + esc(s[0]) + '</a></div>' +
-        '<p class="meta">' + esc(s[2]) + ' · ' + esc(s[3]) + '<br>' + esc(s[4]) + '</p><div class="badges">' + badges + '</div>' +
+        '<p class="meta">' + esc(s[2]) + ' · ' + esc(s[3]) + '<br>' + esc(s[4]) + '</p>' + (me ? '<p class="dist">' + (r.d === null ? 'Distance not available' : (r.d < 0.1 ? 'Under 0.1' : r.d.toFixed(1)) + ' mi away (straight line)') + '</p>' : '') + '<div class="badges">' + badges + '</div>' +
         '<div class="btns"><a class="btn primary" href="' + maps + '" target="_blank" rel="noopener">Directions</a><a class="btn" href="/stores/' + s[1] + '/">Store details</a></div></article>';
     }).join('');
-    out.innerHTML = '<h2>' + head + '</h2><p class="sub">' + links + (res.length > 60 ? ' · showing the first 60' : '') + '</p><div class="cards">' + cards + '</div>';
+    out.innerHTML = '<h2>' + head + '</h2><p class="sub">' + links + (res.length > 60 ? ' · showing the first 60' : '') + '</p>' +
+      '<div class="nearbar"><button type="button" class="nearbtn" id="fnear"' + (me ? ' disabled>Nearest first' : '>Show nearest to me first') + '</button><span class="nearmsg" role="status">' + (nearmsg || '') + '</span></div><div class="cards">' + cards + '</div>';
+    var nb = document.getElementById('fnear');
+    if (nb && !me) nb.addEventListener('click', function () {
+      if (!navigator.geolocation) { nearmsg = 'Your browser is not able to share your location.'; render(); return; }
+      nearmsg = 'Finding your location…'; render();
+      navigator.geolocation.getCurrentPosition(function (p) { me = [p.coords.latitude, p.coords.longitude]; nearmsg = 'Sorted by distance from you. Your location stays on your device.'; render(); },
+        function () { nearmsg = 'Location not shared, so stores stay in the usual order.'; render(); }, { timeout: 10000, maximumAge: 300000 });
+    });
   }
 })();

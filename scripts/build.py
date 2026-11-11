@@ -81,6 +81,9 @@ brand_by_name = {b["Brand"]: b for b in brands}
 
 LIVE_METROS = {"New York City"}  # add "Los Angeles" here when LA launches
 stores = [s for s in rows("Stores") if (s.get("Metro") or "New York City") in LIVE_METROS and s.get("Borough") in BOROUGHS]
+GEO = json.load(open(os.path.join(ROOT, "data", "geo.json"), encoding="utf-8")) if os.path.exists(os.path.join(ROOT, "data", "geo.json")) else {}
+for s in stores:
+    if s["Address"] in GEO: s["lat"], s["lng"] = GEO[s["Address"]]
 seen = set()
 for s in stores:
     sl = slugify(s["Store"])
@@ -219,7 +222,7 @@ def store_card(s, badges, brand_names=None):
     bd = "".join(f'<span class="badge {c}">{esc(t)}</span>' for t, c in badges)
     if featured(s): bd = '<span class="badge featured">Featured</span>' + bd
     if str(s.get("Listing status", "")).strip() == "Brands confirmed": bd += '<span class="badge ok">✓ Confirmed by store</span>'
-    return f'''<article class="card store{" isfeatured" if featured(s) else ""}" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-boro="{esc(s["Borough"])}" data-hood="{esc(s["Neighborhood"])}">
+    return f'''<article class="card store{" isfeatured" if featured(s) else ""}" data-type="{TYPE_FILTER.get(s["Store type"], "other")}" data-boro="{esc(s["Borough"])}" data-hood="{esc(s["Neighborhood"])}"{f' data-lat="{s["lat"]}" data-lng="{s["lng"]}"' if s.get("lat") else ""}>
 <div class="cardhead"><a class="cardtitle" href="/stores/{s["slug"]}/">{esc(s["Store"])}</a></div>
 <p class="meta">{esc(TYPE_LABEL.get(s["Store type"], s["Store type"]))} · {esc(where(s))}<br>{esc(s["Address"])}</p>
 <div class="badges">{bd}</div>
@@ -245,7 +248,8 @@ def brand_page(b):
         cards = "\n".join(store_card(s, [(f'Carries {b["Brand"]}', "ok")] + ([("Selection varies", "warn")] if sel == "Selection varies" else [])) for s, sel in lst)
         count = f'{n} store{"s" if n != 1 else ""} in {AREA} carry this brand'
         fnote = '<p class="small">Stores marked Featured pay to be shown first.</p>' if any(featured(x[0]) for x in lst) else ""
-        listing = f'{chiphtml}<div class="cards" id="list">{cards}</div>{fnote}'
+        near = '<div class="nearbar"><button type="button" class="nearbtn" id="nearme">Show nearest to me first</button><span class="nearmsg" id="nearmsg" role="status"></span></div>'
+        listing = f'{chiphtml}{near}<div class="cards" id="list">{cards}</div>{fnote}'
     else:
         count = "No NYC stores found yet"
         online = ""
@@ -289,6 +293,14 @@ chips.forEach(function(c){c.addEventListener('click',function(){var k=c.dataset.
 c.parentNode.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');x.setAttribute('aria-pressed','false')});
 c.classList.add('on');c.setAttribute('aria-pressed','true');F[k]=c.dataset[k];
 document.querySelectorAll('#list .store').forEach(function(s){s.hidden=!((F.f==='all'||s.dataset.type===F.f)&&(F.b==='all'||s.dataset.boro===F.b))})})})})();
+(function(){var b=document.getElementById('nearme');if(!b)return;var msg=document.getElementById('nearmsg');
+function mi(a,c,d,e){var r=Math.PI/180,x=(d-a)*r,y=(e-c)*r,h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(d*r)*Math.sin(y/2)*Math.sin(y/2);return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))}
+b.addEventListener('click',function(){if(!navigator.geolocation){msg.textContent='Your browser is not able to share your location.';return}
+msg.textContent='Finding your location…';navigator.geolocation.getCurrentPosition(function(p){var la=p.coords.latitude,lo=p.coords.longitude,list=document.getElementById('list'),cards=[].slice.call(list.querySelectorAll('.store'));
+cards.forEach(function(c){var d=c.dataset.lat?mi(la,lo,+c.dataset.lat,+c.dataset.lng):null;c._d=d;var t=c.querySelector('.dist');if(!t){t=document.createElement('p');t.className='dist';c.querySelector('.meta').after(t)}t.textContent=d===null?'Distance not available':(d<0.1?'Under 0.1':d.toFixed(1))+' mi away (straight line)'});
+cards.sort(function(x,y){return(x._d===null)-(y._d===null)||x._d-y._d}).forEach(function(c){list.appendChild(c)});
+msg.textContent='Sorted by distance from you. Your location stays on your device.';b.textContent='Nearest first';b.disabled=true},
+function(){msg.textContent='Location not shared, so stores stay in the usual order.'},{timeout:10000,maximumAge:300000})})})();
 </script>'''
 
 
@@ -454,7 +466,7 @@ idx["s"] = []
 for s in stores:
     lst = by_store.get(s["Store"], [])
     idx["s"].append([s["Store"], s["slug"], TYPE_LABEL.get(s["Store type"], s["Store type"]), where(s), s["Address"],
-                     [bpos[b["Brand"]] for b, _ in lst], [bpos[b["Brand"]] for b, sel in lst if sel == "Selection varies"], s["Borough"]])
+                     [bpos[b["Brand"]] for b, _ in lst], [bpos[b["Brand"]] for b, sel in lst if sel == "Selection varies"], s["Borough"], s.get("lat"), s.get("lng")])
 json.dump(idx, open(os.path.join(PUB, "assets", "search.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 
 # Home page
