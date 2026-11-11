@@ -4,7 +4,9 @@
 
 Run:  python3 scripts/build.py
 """
-import html, json, os, re, shutil, unicodedata
+import html, json, os, re, shutil, unicodedata, hashlib
+_h=lambda f: hashlib.md5(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), f),"rb").read()).hexdigest()[:8]
+CSSV, JSV = _h("site.css"), _h("finder.js")
 from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -130,7 +132,7 @@ def page(path, title, desc, body, crumbs=None, jsonld=None, scripts=""):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/site.css?v={CSSV}">
 {ld}
 </head>
 <body>
@@ -385,7 +387,7 @@ home = f'''<section class="hero"><div class="wrap">
 home_ld = {"@context": "https://schema.org", "@type": "WebSite", "name": "SeekMakeup", "url": SITE + "/"}
 page("/", f"SeekMakeup — Find the stores in {AREA} that carry your makeup brands",
      f"Search {len(brands)} makeup brands across {len(stores)} {AREA} stores. A directory of brands and the stores that sell them; no live inventory.",
-     home, jsonld=home_ld, scripts='<script src="/assets/finder.js" defer></script>')
+     home, jsonld=home_ld, scripts=f'<script src="/assets/finder.js?v={JSV}" defer></script>')
 shutil.copy(os.path.join(ROOT, "scripts", "finder.js"), os.path.join(PUB, "assets", "finder.js"))
 
 # Sitemap
