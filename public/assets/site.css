@@ -10,6 +10,7 @@ h2{font-size:22px;margin:32px 0 10px}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:12px}
 .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:23px;letter-spacing:-.5px;color:var(--ink);text-decoration:none}
 .logo span{color:var(--accent)}
+.logo{display:inline-flex;align-items:center;gap:8px}.logomark{flex:none;display:block}
 .mainnav{display:flex;gap:4px}
 .mainnav a{color:var(--ink);text-decoration:none;font-size:15px;font-weight:500;padding:10px 10px;border-radius:8px}
 .mainnav a:hover{background:var(--tint);color:var(--accent-dark)}
