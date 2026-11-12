@@ -543,6 +543,18 @@ page("/", f"SeekMakeup — Find the stores in {SHORT} that carry your makeup bra
      home, jsonld=home_ld, scripts=f'<script src="/assets/finder.js?v={JSV}" defer></script>')
 shutil.copy(os.path.join(ROOT, "scripts", "finder.js"), os.path.join(PUB, "assets", "finder.js"))
 
+# 404 page: Cloudflare Pages serves /404.html with a 404 status for unknown addresses
+# (without it, Pages treats the site as a single-page app and answers 200 with the homepage)
+page("/404.html", "Page not found | SeekMakeup", "This page doesn't exist on SeekMakeup.",
+     '''<section class="intro"><div class="wrap"><h1>Page not found</h1>
+<p>That page doesn't exist, or it has moved. Try one of these instead:</p>
+<div class="btns"><a class="btn" href="/">Search by brand</a><a class="btn" href="/brands/">All brands</a><a class="btn" href="/stores/">All stores</a></div></div></section>''')
+SITEMAP.remove("/404.html")
+_p404 = os.path.join(PUB, "404.html")
+_h = open(_p404, encoding="utf-8").read()
+_h = _h.replace(f'<link rel="canonical" href="{SITE}/404.html">\n', '').replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="robots" content="noindex">', 1)
+open(_p404, "w", encoding="utf-8").write(_h)
+
 # Sitemap
 urls = ["/", "/contact.html", "/privacy.html"] + SITEMAP
 sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(
