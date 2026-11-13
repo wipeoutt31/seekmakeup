@@ -2670,5 +2670,745 @@
 "66 Ainslie St, Store B, Brooklyn, NY 11211": [
 40.71263,
 -73.95228
+],
+"605 N Michigan Ave, Chicago, IL 60611": [
+41.89292,
+-87.62412
+],
+"108 N State St, Ste 134, Chicago, IL 60602": [
+41.8836,
+-87.62796
+],
+"938 W North Ave, Chicago, IL 60642": [
+41.91092,
+-87.6518
+],
+"3405 N Southport Ave, Chicago, IL 60657": [
+41.94357,
+-87.66384
+],
+"2731 N Clark St, Chicago, IL 60614": [
+41.93202,
+-87.64459
+],
+"2140 N Elston Ave, Chicago, IL 60614": [
+41.92008,
+-87.67039
+],
+"3015 N Clark St, Chicago, IL 60657": [
+41.93669,
+-87.64795
+],
+"16 S Halsted St, Chicago, IL 60661": [
+41.88155,
+-87.64743
+],
+"1300 N Ashland Ave, Frnt J, Chicago, IL 60622": [
+41.90516,
+-87.66762
+],
+"2754 N Clybourn Ave, Spc A2, Chicago, IL 60614": [
+41.93123,
+-87.67701
+],
+"1000 W North Ave, Ste D103, Chicago, IL 60642": [
+41.9109,
+-87.65319
+],
+"4140 S Pulaski Rd, Chicago, IL 60632": [
+41.81722,
+-87.72399
+],
+"1633 N Damen Ave, Chicago, IL 60647": [
+41.91141,
+-87.67741
+],
+"2747 N Clark St, Chicago, IL 60614": [
+41.93219,
+-87.64467
+],
+"3512 N Southport Ave, Chicago, IL 60657": [
+41.94561,
+-87.66405
+],
+"2208 N Halsted, Chicago, IL 60614": [
+41.92201,
+-87.64872
+],
+"356 N Clark St, Chicago, IL 60654": [
+41.8886,
+-87.63112
+],
+"1153 N State St, Chicago, IL 60610": [
+41.90337,
+-87.62859
+],
+"924 W Randolph St, Chicago, IL 60607": [
+41.88452,
+-87.65087
+],
+"55 E Grand Ave, Chicago, IL 60611": [
+41.89164,
+-87.62598
+],
+"111 N State St, Chicago, IL 60602": [
+41.88369,
+-87.62781
+],
+"737 N Michigan Ave, Chicago, IL 60611": [
+41.89592,
+-87.6242
+],
+"540 N Michigan Ave, Chicago, IL 60611": [
+41.89192,
+-87.62434
+],
+"852 W Armitage Ave, Chicago, IL 60614": [
+41.91821,
+-87.65046
+],
+"3450 N Southport Ave, Chicago, IL 60657": [
+41.94462,
+-87.66403
+],
+"4716 N Lincoln Ave, Chicago, IL 60625": [
+41.96716,
+-87.68771
+],
+"1120 W Fullerton Ave, Chicago, IL 60614": [
+41.92538,
+-87.65687
+],
+"4727 W Montrose Ave, Chicago, IL 60641": [
+41.96068,
+-87.74623
+],
+"4065 N Milwaukee Ave, Chicago, IL 60641": [
+41.95474,
+-87.74928
+],
+"1154 S Clark St, Chicago, IL 60605": [
+41.86818,
+-87.63053
+],
+"1101 W Jackson Blvd, Chicago, IL 60607": [
+41.87776,
+-87.65525
+],
+"401 E Illinois St, Chicago, IL 60611": [
+41.891,
+-87.61759
+],
+"630 N LaSalle Dr, Chicago, IL 60654": [
+41.89357,
+-87.6328
+],
+"1200 N Larrabee St, Chicago, IL 60610": [
+41.90377,
+-87.6433
+],
+"1664 W Division St, Chicago, IL 60622": [
+41.90336,
+-87.66987
+],
+"2650 N Clark St, Chicago, IL 60614": [
+41.93137,
+-87.64438
+],
+"555 W Webster Ave, Chicago, IL 60614": [
+41.92184,
+-87.64312
+],
+"3300 N Ashland Ave, Chicago, IL 60657": [
+41.94158,
+-87.66879
+],
+"3204 N Clark St, Chicago, IL 60657": [
+41.94005,
+-87.65085
+],
+"6422 N Sheridan Rd, Unit A, Chicago, IL 60626": [
+41.99849,
+-87.66066
+],
+"4466 N Broadway St, Chicago, IL 60640": [
+41.96306,
+-87.65606
+],
+"2656 N Elston Ave, Chicago, IL 60647": [
+41.92967,
+-87.68428
+],
+"2434 N Sacramento Ave, Chicago, IL 60647": [
+41.92582,
+-87.70242
+],
+"6525 W Diversey Ave, Chicago, IL 60707": [
+41.93088,
+-87.78954
+],
+"2112 W Peterson Ave, Chicago, IL 60659": [
+41.99069,
+-87.68207
+],
+"4631 W Foster Ave, Chicago, IL 60630": [
+41.97532,
+-87.74375
+],
+"4728 W Irving Park Rd, Chicago, IL 60641": [
+41.9535,
+-87.74611
+],
+"4433 S Pulaski Rd, Chicago, IL 60632": [
+41.81275,
+-87.72369
+],
+"1940 W 33rd St, Chicago, IL 60608": [
+41.8341,
+-87.67442
+],
+"1346 E 53rd St, Chicago, IL 60615": [
+41.79955,
+-87.59306
+],
+"2939 W Addison St, Chicago, IL 60618": [
+41.94659,
+-87.70144
+],
+"5205 N Broadway St, Chicago, IL 60640": [
+41.97645,
+-87.65979
+],
+"1201 N State St, Chicago, IL 60610": [
+41.904,
+-87.6286
+],
+"121 W Kinzie St, Chicago, IL 60654": [
+41.88913,
+-87.63234
+],
+"1930 W 103rd St, Chicago, IL 60643": [
+41.70663,
+-87.66963
+],
+"6417 W Higgins Ave, Chicago, IL 60656": [
+41.9766,
+-87.78903
+],
+"3615 N Central Ave, Chicago, IL 60634": [
+41.94605,
+-87.76668
+],
+"8712 S Stony Island Ave, Chicago, IL 60617": [
+41.73665,
+-87.58571
+],
+"3951 W 103rd St, Chicago, IL 60655": [
+41.70585,
+-87.71972
+],
+"1714 N Sheffield Ave, Chicago, IL 60614": [
+41.9121,
+-87.65323
+],
+"205 N Michigan Ave, Chicago, IL 60601": [
+41.88594,
+-87.62444
+],
+"1211 W Roosevelt Rd, Chicago, IL 60608": [
+41.86694,
+-87.65695
+],
+"4800 N Damen, Chicago, IL 60625": [
+41.96881,
+-87.67926
+],
+"1228 E 53rd St, Chicago, IL 60615": [
+41.79952,
+-87.59615
+],
+"6510 N Sheridan Rd, Chicago, IL 60626": [
+42.00055,
+-87.66079
+],
+"4051 N Lincoln, Chicago, IL 60618": [
+41.95545,
+-87.67958
+],
+"205 N Columbus Dr, Chicago, IL 60601": [
+41.88606,
+-87.6205
+],
+"3637 N Southport, Chicago, IL 60613": [
+41.94777,
+-87.66396
+],
+"2427 W Chicago Ave, Chicago, IL 60622": [
+41.89568,
+-87.68753
+],
+"771 N Ogden Ave, Chicago, IL 60642": [
+41.89605,
+-87.65481
+],
+"25 E Ohio St, Chicago, IL 60611": [
+41.89242,
+-87.6273
+],
+"1819 N Harlem Ave, Chicago, IL 60707": [
+41.91291,
+-87.80583
+],
+"670-678 N Wells St, Chicago, IL 60654": [
+41.89441,
+-87.63422
+],
+"2628 W Pershing Rd, Chicago, IL 60632": [
+41.82292,
+-87.69057
+],
+"3429 S King Dr, Chicago, IL 60616": [
+41.83226,
+-87.61691
+],
+"2101 E 71st St, Ste D, Chicago, IL 60649": [
+41.76604,
+-87.57392
+],
+"3033 N Broadway St, Chicago, IL 60657": [
+41.93722,
+-87.64423
+],
+"1165 N Clark, Chicago, IL 60610": [
+41.90343,
+-87.63135
+],
+"3940 W Fullerton, Chicago, IL 60647": [
+41.92455,
+-87.72563
+],
+"2021 E 95th St, Chicago, IL 60617": [
+41.72242,
+-87.57457
+],
+"344 W Hubbard, Chicago, IL 60654": [
+41.88999,
+-87.63745
+],
+"7855 S Western Ave, Chicago, IL 60620": [
+41.75093,
+-87.68279
+],
+"520 S State St, Chicago, IL 60605": [
+41.87539,
+-87.62776
+],
+"741 W 31st, Chicago, IL 60616": [
+41.838,
+-87.64558
+],
+"6315 S Pulaski Rd, Ste 1, Chicago, IL 60629": [
+41.77796,
+-87.72267
+],
+"6150 N Broadway, Chicago, IL 60660": [
+41.99368,
+-87.66046
+],
+"1034 W Lake St, Chicago, IL 60607": [
+41.88562,
+-87.65344
+],
+"2345 W 103rd St, Chicago, IL 60643": [
+41.70632,
+-87.68097
+],
+"3611 E 106th St, Chicago, IL 60617": [
+41.70268,
+-87.53536
+],
+"3220 W 111th St, Chicago, IL 60655": [
+41.69161,
+-87.702
+],
+"3045 W 26th St, Chicago, IL 60623": [
+41.84452,
+-87.70165
+],
+"1926 W 35th St, Chicago, IL 60609": [
+41.83046,
+-87.67384
+],
+"3943 W 47th St, Chicago, IL 60632": [
+41.80783,
+-87.72244
+],
+"1320 E 47th St, Chicago, IL 60653": [
+41.80973,
+-87.59418
+],
+"1554 E 55th St, Chicago, IL 60615": [
+41.79546,
+-87.58929
+],
+"4000 W 59th St, Chicago, IL 60629": [
+41.78599,
+-87.72304
+],
+"6016 W 63rd St, Chicago, IL 60638": [
+41.7779,
+-87.77264
+],
+"1533 E 67th St, Chicago, IL 60637": [
+41.77326,
+-87.58793
+],
+"11 E 75th St, Chicago, IL 60619": [
+41.75819,
+-87.62403
+],
+"1213 W 79th St, Chicago, IL 60620": [
+41.75042,
+-87.65487
+],
+"1616 E 87th St, Chicago, IL 60617": [
+41.73699,
+-87.58422
+],
+"1633 W 95th St, Chicago, IL 60643": [
+41.72106,
+-87.66406
+],
+"200 W Adams St, Chicago, IL 60606": [
+41.87944,
+-87.63383
+],
+"5935 W Addison St, Chicago, IL 60634": [
+41.94573,
+-87.77493
+],
+"4385 S Archer Ave, Chicago, IL 60632": [
+41.81403,
+-87.70422
+],
+"5414 S Archer Ave, Chicago, IL 60638": [
+41.79855,
+-87.74408
+],
+"5874 S Archer Ave, Chicago, IL 60638": [
+41.79594,
+-87.76127
+],
+"7150 W Archer Ave, Chicago, IL 60638": [
+41.79201,
+-87.80034
+],
+"834 W Armitage Ave, Chicago, IL 60614": [
+41.91821,
+-87.64993
+],
+"3110 W Armitage Ave, Chicago, IL 60647": [
+41.91747,
+-87.70551
+],
+"11801 S Ave O, Chicago, IL 60617": [
+41.68089,
+-87.54003
+],
+"3424 W Belmont Ave, Chicago, IL 60618": [
+41.93931,
+-87.71425
+],
+"6809 W Belmont Ave, Chicago, IL 60634": [
+41.9381,
+-87.79601
+],
+"4745 W Belmont Ave, Chicago, IL 60641": [
+41.93878,
+-87.74608
+],
+"1649 W Belmont Ave, Chicago, IL 60657": [
+41.93962,
+-87.67005
+],
+"3646 N Broadway St, Chicago, IL 60613": [
+41.94833,
+-87.64795
+],
+"3201 N Broadway St, Chicago, IL 60657": [
+41.9401,
+-87.64432
+],
+"6121 N Broadway St, Chicago, IL 60660": [
+41.99308,
+-87.66028
+],
+"2744 N California Ave, Chicago, IL 60647": [
+41.9314,
+-87.69768
+],
+"5753 N Canfield Ave, Chicago, IL 60631": [
+41.98456,
+-87.82324
+],
+"4343 N Central Ave, Chicago, IL 60634": [
+41.95963,
+-87.76714
+],
+"1546 N Central Ave, Chicago, IL 60651": [
+41.90893,
+-87.76595
+],
+"1931 W Cermak Rd, Chicago, IL 60608": [
+41.85214,
+-87.67417
+],
+"316 W Cermak Rd, Chicago, IL 60616": [
+41.85293,
+-87.63521
+],
+"1650 W Chicago Ave, Chicago, IL 60622": [
+41.8961,
+-87.66891
+],
+"4040 N Cicero Ave, Chicago, IL 60641": [
+41.95452,
+-87.74741
+],
+"2500 N Clark St, Chicago, IL 60614": [
+41.92771,
+-87.64183
+],
+"7410 N Clark St, Chicago, IL 60626": [
+42.01628,
+-87.67532
+],
+"5440 N Clark St, Chicago, IL 60640": [
+41.98095,
+-87.66844
+],
+"641 N Clark St, Chicago, IL 60654": [
+41.89397,
+-87.63111
+],
+"5036 S Cottage Grove Ave, Chicago, IL 60615": [
+41.80281,
+-87.6065
+],
+"1200 N Dearborn St, Chicago, IL 60610": [
+41.90398,
+-87.63006
+],
+"5140 W Diversey Ave, Chicago, IL 60639": [
+41.93148,
+-87.75498
+],
+"740 W Diversey Pkwy, Chicago, IL 60614": [
+41.9328,
+-87.64783
+],
+"7155 W Foster Pl, Chicago, IL 60656": [
+41.97489,
+-87.80596
+],
+"1520 W Fullerton Ave, Chicago, IL 60614": [
+41.92523,
+-87.66661
+],
+"4817 W Fullerton Ave, Chicago, IL 60639": [
+41.92417,
+-87.74731
+],
+"5600 W Fullerton Ave, Chicago, IL 60639": [
+41.92404,
+-87.76607
+],
+"3320 W Fullerton Ave, Chicago, IL 60647": [
+41.92473,
+-87.71108
+],
+"3000 S Halsted St, Chicago, IL 60608": [
+41.83981,
+-87.6464
+],
+"4700 S Halsted St, Chicago, IL 60609": [
+41.8088,
+-87.64561
+],
+"3046 N Halsted St, Chicago, IL 60657": [
+41.93699,
+-87.64924
+],
+"111 S Halsted St, Chicago, IL 60661": [
+41.88033,
+-87.64724
+],
+"342 E Illinois St, Chicago, IL 60611": [
+41.89108,
+-87.61918
+],
+"953 W Irving Park Rd, Chicago, IL 60613": [
+41.95445,
+-87.6534
+],
+"3153 W Irving Park Rd, Chicago, IL 60618": [
+41.95387,
+-87.70703
+],
+"4001 W Irving Park Rd, Chicago, IL 60641": [
+41.9536,
+-87.72769
+],
+"4343 N Kedzie Ave, Chicago, IL 60618": [
+41.96015,
+-87.70814
+],
+"6315 S Kedzie Ave, Chicago, IL 60629": [
+41.7781,
+-87.70304
+],
+"5435 S Kedzie Ave, Chicago, IL 60632": [
+41.79437,
+-87.70351
+],
+"4010 W Lawrence Ave, Chicago, IL 60630": [
+41.96829,
+-87.72919
+],
+"4801 N Lincoln Ave, Chicago, IL 60625": [
+41.97047,
+-87.6896
+],
+"5158 N Lincoln Ave, Chicago, IL 60625": [
+41.97491,
+-87.69234
+],
+"2340 W Madison St, Chicago, IL 60612": [
+41.88128,
+-87.68499
+],
+"5222 W Madison St, Chicago, IL 60644": [
+41.88041,
+-87.75621
+],
+"4720 N Marine Dr, Chicago, IL 60640": [
+41.96795,
+-87.64937
+],
+"410 N Michigan Ave, Chicago, IL 60611": [
+41.88973,
+-87.62441
+],
+"757 N Michigan Ave, Chicago, IL 60611": [
+41.89605,
+-87.6242
+],
+"3222 N Milwaukee Ave, Chicago, IL 60618": [
+41.93978,
+-87.7251
+],
+"1372 N Milwaukee Ave, Chicago, IL 60622": [
+41.90678,
+-87.67196
+],
+"5230 N Milwaukee Ave, Chicago, IL 60630": [
+41.97495,
+-87.76719
+],
+"2001 N Milwaukee Ave, Chicago, IL 60647": [
+41.91764,
+-87.68861
+],
+"79 W Monroe St, Chicago, IL 60603": [
+41.88065,
+-87.63026
+],
+"6310 N Nagle Ave, Chicago, IL 60646": [
+41.99573,
+-87.78757
+],
+"4748 W North Ave, Chicago, IL 60639": [
+41.9097,
+-87.74492
+],
+"2440 W North Ave, Chicago, IL 60647": [
+41.91037,
+-87.68852
+],
+"3019 W Peterson Ave, Chicago, IL 60659": [
+41.99036,
+-87.70453
+],
+"7045 S Pulaski Rd, Chicago, IL 60629": [
+41.76479,
+-87.72232
+],
+"1627 N Pulaski Rd, Chicago, IL 60639": [
+41.91077,
+-87.72628
+],
+"100 W Randolph St, Chicago, IL 60601": [
+41.88453,
+-87.63101
+],
+"1051 W Randolph, Chicago, IL 60607": [
+41.88413,
+-87.65386
+],
+"5625 N Ridge Ave, Chicago, IL 60660": [
+41.98445,
+-87.66129
+],
+"2 E Roosevelt Rd, Chicago, IL 60605": [
+41.86755,
+-87.62648
+],
+"501 W Roosevelt Rd, Chicago, IL 60607": [
+41.8672,
+-87.63929
+],
+"2 N State St, Ste 1, Chicago, IL 60602": [
+41.88209,
+-87.62789
+],
+"151 N State St, Chicago, IL 60601": [
+41.88484,
+-87.62784
+],
+"933 N State St, Chicago, IL 60610": [
+41.90017,
+-87.62822
+],
+"433 W Van Buren St, Chicago, IL 60607": [
+41.87673,
+-87.6385
+],
+"1601 N Wells St, Chicago, IL 60614": [
+41.91127,
+-87.63464
+],
+"4710 S Western Ave, Chicago, IL 60609": [
+41.80758,
+-87.68448
+],
+"3358 N Western Ave, Chicago, IL 60618": [
+41.94234,
+-87.68833
+],
+"11833 S Western Ave, Chicago, IL 60643": [
+41.67837,
+-87.68066
+],
+"7510 N Western Ave, Chicago, IL 60645": [
+42.01795,
+-87.69027
+],
+"6140 N Western Ave, Chicago, IL 60659": [
+41.99303,
+-87.68981
+],
+"1500 W Wilson Ave, Chicago, IL 60640": [
+41.96531,
+-87.66788
 ]
 }
