@@ -2,7 +2,7 @@
 
 > A directory of physical stores in New York City and Los Angeles and the makeup brands each one carries. It lists which stores carry a brand, not live stock or shades.
 
-SeekMakeup covers 80 makeup brands and 689 stores: beauty chains, department stores, drugstores, Target, brand boutiques and independent shops. Each store's brand list comes from the store's, chain's or brand's own published list, and every listing shows when it was last checked. Chain stores marked "Selection varies" may not stock every brand on the chain's list.
+SeekMakeup covers 80 makeup brands and 690 stores: beauty chains, department stores, drugstores, Target, brand boutiques and independent shops. Each store's brand list comes from the store's, chain's or brand's own published list, and every listing shows when it was last checked. Chain stores marked "Selection varies" may not stock every brand on the chain's list.
 
 ## Key pages
 - [All brands](https://seekmakeup.com/brands/): one page per brand, listing the New York City and Los Angeles stores that carry it
